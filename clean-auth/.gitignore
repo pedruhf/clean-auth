@@ -3,3 +3,4 @@ vscode
 coverage
 dist
 postgres-data
+**/migrations/**

@@ -4,9 +4,8 @@ import { Encrypter, GetUserByEmailRepository, SaveUserRepo } from "@/data/gatewa
 
 export class RemoteSignUp implements SignUp {
   constructor(
-    private readonly emailRepository: GetUserByEmailRepository,
+    private readonly usersRepo: GetUserByEmailRepository & SaveUserRepo,
     private readonly encrypter: Encrypter,
-    private readonly usersRepo: SaveUserRepo
   ) {}
 
   async execute({
@@ -14,7 +13,7 @@ export class RemoteSignUp implements SignUp {
     email,
     password,
   }: SignUp.Input): Promise<SignUp.Output> {
-    const foundedUser = await this.emailRepository.getUserByEmail(email);
+    const foundedUser = await this.usersRepo.getUserByEmail(email);
     if (foundedUser) {
       throw new EmailInUseError();
     }

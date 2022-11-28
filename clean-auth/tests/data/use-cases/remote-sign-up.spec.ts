@@ -11,8 +11,12 @@ import {
 } from "@/data/gateways";
 import { getUserMock } from "@/tests/domain/mocks";
 
-export class UsersRepoStub implements SaveUserRepo {
+export class UsersRepoStub implements SaveUserRepo, GetUserByEmailRepository {
   async save(input: SaveUserRepo.Input): Promise<void> {}
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Promise.resolve(undefined);
+  }
 }
 
 export class EncrypterStub implements Encrypter {
@@ -21,29 +25,21 @@ export class EncrypterStub implements Encrypter {
   }
 }
 
-export class GetUserByEmailRepositoryStub implements GetUserByEmailRepository {
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Promise.resolve(undefined);
-  }
-}
-
 const makeSut = () => {
-  const emailRepositoryStub = new GetUserByEmailRepositoryStub();
   const encrypterStub = new EncrypterStub();
   const usersRepoStub = new UsersRepoStub();
   const sut = new RemoteSignUp(
-    emailRepositoryStub,
+    usersRepoStub,
     encrypterStub,
-    usersRepoStub
   );
 
-  return { sut, emailRepositoryStub, encrypterStub, usersRepoStub };
+  return { sut, encrypterStub, usersRepoStub };
 };
 
 describe("RemoteSignUp UseCase", () => {
   it("should call EmailRepository with correct input", async () => {
-    const { sut, emailRepositoryStub } = makeSut();
-    const getUserByEmailSpy = vi.spyOn(emailRepositoryStub, "getUserByEmail");
+    const { sut, usersRepoStub } = makeSut();
+    const getUserByEmailSpy = vi.spyOn(usersRepoStub, "getUserByEmail");
 
     const input = getUserMock();
     await sut.execute(input);
@@ -53,8 +49,8 @@ describe("RemoteSignUp UseCase", () => {
   });
 
   it("should throw EmailInUseError", async () => {
-    const { sut, emailRepositoryStub } = makeSut();
-    vi.spyOn(emailRepositoryStub, "getUserByEmail").mockResolvedValueOnce(
+    const { sut, usersRepoStub } = makeSut();
+    vi.spyOn(usersRepoStub, "getUserByEmail").mockResolvedValueOnce(
       getUserMock()
     );
 
@@ -64,8 +60,8 @@ describe("RemoteSignUp UseCase", () => {
   });
 
   it("should rethrow if EmailRepository throws", async () => {
-    const { sut, emailRepositoryStub } = makeSut();
-    vi.spyOn(emailRepositoryStub, "getUserByEmail").mockRejectedValueOnce(
+    const { sut, usersRepoStub } = makeSut();
+    vi.spyOn(usersRepoStub, "getUserByEmail").mockRejectedValueOnce(
       new Error("getUserByEmail error")
     );
 

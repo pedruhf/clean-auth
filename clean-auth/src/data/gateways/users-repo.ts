@@ -10,3 +10,9 @@ export namespace SaveUserRepo {
 export interface SaveUserRepo {
   save: (input: SaveUserRepo.Input) => Promise<SaveUserRepo.Output>;
 }
+
+import { User } from "@/domain/models";
+
+export interface GetUserByEmailRepository {
+  getUserByEmail: (email: string) => Promise<User | undefined>;
+}

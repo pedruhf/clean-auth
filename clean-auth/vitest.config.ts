@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 import { resolve } from "path";
 
 export default defineConfig({
-  define: {
+  resolve: {
     alias: [
       { find: "@/tests", replacement: resolve(__dirname, "tests") },
       { find: "@", replacement: resolve(__dirname, "src") }
@@ -16,5 +16,5 @@ export default defineConfig({
     },
     passWithNoTests: true,
     globals: true,
-  }
+  },
 })

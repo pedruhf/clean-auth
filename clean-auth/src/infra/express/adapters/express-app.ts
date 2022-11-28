@@ -1,15 +1,17 @@
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
+import { readdirSync } from "fs";
+import { join } from "path";
+
 import { bodyParser, contentType, cors } from "@/infra/express/middlewares";
 
 export class ExpressAppAdapter {
   private static instance?: ExpressAppAdapter;
   public client: Express;
 
-  private constructor () {
+  private constructor() {
     this.client = express();
-    this.client.use(bodyParser);
-    this.client.use(cors);
-    this.client.use(contentType);
+    this.setupMiddlewares();
+    this.setupRoutes();
   }
 
   static getIstance(): ExpressAppAdapter {
@@ -21,6 +23,26 @@ export class ExpressAppAdapter {
   }
 
   listen(port: number): void {
-    this.client.listen(port, () => console.info(`Server running at http://localhost:${port}`));
+    this.client.listen(port, () =>
+      console.info(`Server running at http://localhost:${port}`)
+    );
+  }
+
+  setupMiddlewares(): void {
+    this.client.use(bodyParser);
+    this.client.use(cors);
+    this.client.use(contentType);
+  }
+
+  setupRoutes(): void {
+    const router = Router();
+    this.client.use("/api", router);
+    readdirSync(join(__dirname, "../../../main/routes")).map(async (file) => {
+      console.log("file", file);
+
+      if (!file.endsWith(".map")) {
+        (await import(`../../../main/routes/${file}`)).default(router);
+      }
+    });
   }
 }

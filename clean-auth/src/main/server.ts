@@ -1,5 +1,5 @@
 import "./config/module-alias"
-import { ExpressAppAdapter } from "@/main/config";
+import { ExpressAppAdapter } from "@/infra/express/adapters";
 
 const app = ExpressAppAdapter.getIstance();
 

@@ -1,9 +1,9 @@
-import { bodyParser, contentType, cors } from "@/infra/middlewares";
 import express, { Express } from "express";
+import { bodyParser, contentType, cors } from "@/infra/express/middlewares";
 
 export class ExpressAppAdapter {
   private static instance?: ExpressAppAdapter;
-  private client: Express;
+  public client: Express;
 
   private constructor () {
     this.client = express();

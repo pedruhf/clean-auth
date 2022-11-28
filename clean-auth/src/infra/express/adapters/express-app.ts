@@ -38,8 +38,6 @@ export class ExpressAppAdapter {
     const router = Router();
     this.client.use("/api", router);
     readdirSync(join(__dirname, "../../../main/routes")).map(async (file) => {
-      console.log("file", file);
-
       if (!file.endsWith(".map")) {
         (await import(`../../../main/routes/${file}`)).default(router);
       }

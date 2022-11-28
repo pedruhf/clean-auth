@@ -5,9 +5,7 @@ export namespace SignUp {
     password: string;
   }
 
-  export type Output = {
-    accessToken: string;
-  }
+  export type Output = void;
 }
 
 export interface SignUp {

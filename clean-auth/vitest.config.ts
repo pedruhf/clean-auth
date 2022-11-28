@@ -16,5 +16,6 @@ export default defineConfig({
     },
     passWithNoTests: true,
     globals: true,
+    exclude: ["**/node_modules/**", "**/dist/**", "./postgres-data"]
   },
 })

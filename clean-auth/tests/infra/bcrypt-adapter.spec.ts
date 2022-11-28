@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it, Mock, vi } from "vitest";
 import { faker } from "@faker-js/faker";
-import bcrypt, { hashSync } from "bcrypt";
+import { hashSync } from "bcrypt";
 
 import { BcryptAdapter } from "@/infra";
 

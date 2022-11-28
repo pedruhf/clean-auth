@@ -1,49 +1,14 @@
 import { beforeAll, describe, expect, it, Mock, vi } from "vitest";
-import Prisma, { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
-import { GetUserByEmailRepository, SaveUserRepo } from "@/data/gateways";
-import { User } from "@/domain/models";
+import { PgUserRepo } from "@/infra/database";
 
 vi.mock("@prisma/client", () => ({
   PrismaClient: vi.fn(),
 }));
 
-class PgUserRepo implements SaveUserRepo, GetUserByEmailRepository {
-  private static instance?: PgUserRepo;
-  private client: PrismaClient;
 
-  private constructor() {
-    this.client = new PrismaClient();
-  }
-
-  static getInstance(): PgUserRepo {
-    if (!this.instance) {
-      this.instance = new PgUserRepo();
-    }
-    return this.instance;
-  }
-
-  async save({ name, email, password }: SaveUserRepo.Input): Promise<void> {
-    this.client.user.create({
-      data: {
-        name,
-        email,
-        password,
-      },
-    });
-  }
-
-  async getUserByEmail(email: string): Promise<User> {
-    const user = this.client.user.findUnique({
-      where: {
-        email,
-      },
-    });
-
-    return user;
-  }
-}
 
 const makeSut = () => {
   const sut = PgUserRepo.getInstance();

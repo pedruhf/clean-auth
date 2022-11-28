@@ -19,7 +19,7 @@ export class PgUserRepo implements UserRepo {
   }
 
   async save({ name, email, password }: SaveUserRepo.Input): Promise<void> {
-    this.client.user.create({
+    await this.client.user.create({
       data: {
         name,
         email,
@@ -29,7 +29,7 @@ export class PgUserRepo implements UserRepo {
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = this.client.user.findUnique({
+    const user = await this.client.user.findUnique({
       where: {
         email,
       },

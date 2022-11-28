@@ -14,7 +14,7 @@ export class ExpressAppAdapter {
     this.setupRoutes();
   }
 
-  static getIstance(): ExpressAppAdapter {
+  static getInstance(): ExpressAppAdapter {
     if (!this.instance) {
       this.instance = new ExpressAppAdapter();
     }

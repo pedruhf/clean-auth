@@ -1,6 +1,7 @@
 import { sign, verify } from "jsonwebtoken";
 
 import { TokenDecrypter, TokenGenerator } from "@/data/gateways";
+import { AccessDeniedError } from "@/application/errors";
 
 export class JwtAdapter implements TokenGenerator, TokenDecrypter {
   static expiresTimeInMs = 3 * 60 * 60 * 1000;
@@ -11,7 +12,11 @@ export class JwtAdapter implements TokenGenerator, TokenDecrypter {
   }
 
   decrypt (encryptedValue: string): string {
-    const decryptedValue = verify(encryptedValue, "any_secret") as string;
-    return decryptedValue;
+    try {
+      const decryptedValue = verify(encryptedValue, "any_secret") as string;
+      return decryptedValue;
+    } catch {
+      throw new AccessDeniedError()
+    }
   }
 }

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { User } from "@/domain/models";
 import { SaveUserRepo, UserRepo } from "@/data/gateways";
+import { DbConnectionError } from "@/infra/errors";
 
 export class PgUserRepo implements UserRepo {
   private static instance?: PgUserRepo;
@@ -19,22 +20,32 @@ export class PgUserRepo implements UserRepo {
   }
 
   async save({ name, email, password }: SaveUserRepo.Input): Promise<void> {
-    await this.client.user.create({
-      data: {
-        name,
-        email,
-        password,
-      },
-    });
+    try {
+      await this.client.user.create({
+        data: {
+          name,
+          email,
+          password,
+        },
+      });
+    } catch {
+      throw new DbConnectionError();
+    }
   }
 
-  async getUserByEmail(email: string): Promise<User> {
-    const user = await this.client.user.findUnique({
-      where: {
-        email,
-      },
-    });
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    try {
+      const user = await this.client.user.findUnique({
+        where: {
+          email,
+        },
+      });
 
-    return user;
+      if (!user) return;
+
+      return user;
+    } catch {
+      throw new DbConnectionError();
+    }
   }
 }

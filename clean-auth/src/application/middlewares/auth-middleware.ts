@@ -9,7 +9,7 @@ import { TokenDecrypter } from "@/data/gateways";
 import { AccessDeniedError } from "@/application/errors";
 
 type AuthMiddlewareRequest = {
-  accessToken?: string;
+  authorization?: string;
 };
 
 type AuthMiddlewareResponse = HttpResponse<{ userId: string } | Error>;
@@ -21,12 +21,12 @@ export class AuthMiddleware implements Middleware {
     httpRequest: AuthMiddlewareRequest
   ): Promise<AuthMiddlewareResponse> {
     try {
-      const { accessToken } = httpRequest;
-      if (!accessToken) {
+      const { authorization } = httpRequest;
+      if (!authorization) {
         return unauthorized(new AccessDeniedError());
       }
 
-      const userId = this.token.decrypt(accessToken);
+      const userId = this.token.decrypt(authorization);
       return success({ userId });
     } catch (error) {
       return serverError(<Error>error);

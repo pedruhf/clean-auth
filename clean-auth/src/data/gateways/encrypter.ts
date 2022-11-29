@@ -5,3 +5,7 @@ export interface Encrypter {
 export interface EncryptComparer {
   compare: (encryptedValue: string, value: string) => boolean;
 }
+
+export interface Decrypter {
+  decrypt: (encryptedValue: string) => string;
+}

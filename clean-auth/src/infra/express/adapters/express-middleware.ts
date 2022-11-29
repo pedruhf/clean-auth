@@ -11,7 +11,7 @@ export const expressMiddlewareAdapter = (middleware: Middleware) => {
       return res.status(statusCode).json({ error: data.message });
     }
 
-    Object.assign(req.headers, data);
+    req.locals = { ...req.locals, ...data };
     next();
   };
 };

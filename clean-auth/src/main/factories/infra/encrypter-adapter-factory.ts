@@ -1,6 +1,6 @@
-import { Encrypter } from "@/data/gateways";
+import { EncryptComparer, Encrypter } from "@/data/gateways";
 import { BcryptAdapter } from "@/infra";
 
-export const makeEncrypterAdapter = (): Encrypter => {
+export const makeEncrypterAdapter = (): Encrypter & EncryptComparer => {
   return new BcryptAdapter();
 };

@@ -5,7 +5,7 @@ import {
   unauthorized,
 } from "@/application/helpers";
 import { Middleware } from "@/application/protocols";
-import { Decrypter } from "@/data/gateways";
+import { TokenDecrypter } from "@/data/gateways";
 import { AccessDeniedError } from "@/application/errors";
 
 type AuthMiddlewareRequest = {
@@ -15,7 +15,7 @@ type AuthMiddlewareRequest = {
 type AuthMiddlewareResponse = HttpResponse<{ userId: string } | Error>;
 
 export class AuthMiddleware implements Middleware {
-  constructor(private readonly decrypter: Decrypter) {}
+  constructor(private readonly token: TokenDecrypter) {}
 
   async handle(
     httpRequest: AuthMiddlewareRequest
@@ -26,7 +26,7 @@ export class AuthMiddleware implements Middleware {
         return unauthorized(new AccessDeniedError());
       }
 
-      const userId = this.decrypter.decrypt(accessToken);
+      const userId = this.token.decrypt(accessToken);
       return success({ userId });
     } catch (error) {
       return serverError(<Error>error);

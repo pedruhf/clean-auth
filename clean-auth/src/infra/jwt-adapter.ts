@@ -1,4 +1,4 @@
-import { sign, verify } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 
 import { TokenDecrypter, TokenGenerator } from "@/data/gateways";
 import { AccessDeniedError } from "@/application/errors";
@@ -13,8 +13,8 @@ export class JwtAdapter implements TokenGenerator, TokenDecrypter {
 
   decrypt (encryptedValue: string): string {
     try {
-      const decryptedValue = verify(encryptedValue, "any_secret") as string;
-      return decryptedValue;
+      const decryptedValue = verify(encryptedValue, "any_secret") as JwtPayload;
+      return decryptedValue.id;
     } catch {
       throw new AccessDeniedError()
     }

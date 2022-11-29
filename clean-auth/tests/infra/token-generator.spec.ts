@@ -22,7 +22,7 @@ describe("JwtAdapter", () => {
   beforeAll(() => {
     signSpy = vi.fn().mockReturnValue("any_token");
     vi.mocked(sign).mockImplementation(signSpy);
-    verifySpy = vi.fn().mockReturnValue("any_id");
+    verifySpy = vi.fn().mockReturnValue({ id: "any_id" });
     vi.mocked(verify).mockImplementation(verifySpy);
   });
 

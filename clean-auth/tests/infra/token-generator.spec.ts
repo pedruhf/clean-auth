@@ -1,10 +1,12 @@
 import { beforeAll, describe, expect, it, Mock, vi } from "vitest";
 import { faker } from "@faker-js/faker";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
+
 import { JwtAdapter } from "@/infra";
 
 vi.mock("jsonwebtoken", () => ({
   sign: vi.fn(),
+  verify: vi.fn(),
 }));
 
 const makeSut = () => {
@@ -14,10 +16,13 @@ const makeSut = () => {
 
 describe("JwtAdapter", () => {
   let signSpy: Mock;
+  let verifySpy: Mock;
 
   beforeAll(() => {
     signSpy = vi.fn().mockReturnValue("any_token");
     vi.mocked(sign).mockImplementation(signSpy);
+    verifySpy = vi.fn().mockReturnValue("any_id");
+    vi.mocked(verify).mockImplementation(verifySpy);
   });
 
   describe("generate", () => {
@@ -51,6 +56,38 @@ describe("JwtAdapter", () => {
       const id = faker.datatype.number();
 
       expect(() => sut.generate(id)).toThrow(new Error("sign error"));
+    });
+  });
+
+  describe("decrypt", () => {
+    it("should call verify with correct input", () => {
+      const { sut } = makeSut();
+
+      const encryptedValue = faker.internet.password();
+      sut.decrypt(encryptedValue);
+
+      expect(verifySpy).toHaveBeenCalledTimes(1);
+      expect(verifySpy).toHaveBeenCalledWith(encryptedValue, "any_secret");
+    });
+
+    it("should return decrypted value", () => {
+      const { sut } = makeSut();
+
+      const encryptedValue = faker.internet.password();
+      const result = sut.decrypt(encryptedValue);
+
+      expect(result).toBe("any_id");
+    });
+
+    it("should rethrow if verify throws", () => {
+      const { sut } = makeSut();
+      verifySpy.mockImplementationOnce(() => {
+        throw new Error("verify error");
+      });
+
+      const encryptedValue = faker.internet.password();
+
+      expect(() => sut.decrypt(encryptedValue)).toThrow(new Error("verify error"));
     });
   });
 });

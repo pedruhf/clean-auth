@@ -3,7 +3,6 @@ import { faker } from "@faker-js/faker";
 
 import { RemoteSignUp } from "@/data/use-cases";
 import { User } from "@/domain/models";
-import { EmailInUseError } from "@/domain/errors";
 import {
   Encrypter,
   GetUserByEmailRepository,
@@ -28,50 +27,12 @@ export class EncrypterStub implements Encrypter {
 const makeSut = () => {
   const encrypterStub = new EncrypterStub();
   const usersRepoStub = new UsersRepoStub();
-  const sut = new RemoteSignUp(
-    usersRepoStub,
-    encrypterStub,
-  );
+  const sut = new RemoteSignUp(usersRepoStub, encrypterStub);
 
   return { sut, encrypterStub, usersRepoStub };
 };
 
 describe("RemoteSignUp UseCase", () => {
-  it("should call EmailRepository with correct input", async () => {
-    const { sut, usersRepoStub } = makeSut();
-    const getUserByEmailSpy = vi.spyOn(usersRepoStub, "getUserByEmail");
-
-    const input = getUserMock();
-    await sut.execute(input);
-
-    expect(getUserByEmailSpy).toHaveBeenCalledTimes(1);
-    expect(getUserByEmailSpy).toHaveBeenCalledWith(input.email);
-  });
-
-  it("should throw EmailInUseError", async () => {
-    const { sut, usersRepoStub } = makeSut();
-    vi.spyOn(usersRepoStub, "getUserByEmail").mockResolvedValueOnce(
-      getUserMock()
-    );
-
-    const resultPromise = sut.execute(getUserMock());
-
-    await expect(resultPromise).rejects.toThrow(new EmailInUseError());
-  });
-
-  it("should rethrow if EmailRepository throws", async () => {
-    const { sut, usersRepoStub } = makeSut();
-    vi.spyOn(usersRepoStub, "getUserByEmail").mockRejectedValueOnce(
-      new Error("getUserByEmail error")
-    );
-
-    const resultPromise = sut.execute(getUserMock());
-
-    await expect(resultPromise).rejects.toThrow(
-      new Error("getUserByEmail error")
-    );
-  });
-
   it("should call Encrypter with correct input", async () => {
     const { sut, encrypterStub } = makeSut();
     const encryptSpy = vi.spyOn(encrypterStub, "encrypt");

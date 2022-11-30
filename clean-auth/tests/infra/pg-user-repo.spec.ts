@@ -2,8 +2,10 @@ import { beforeAll, describe, expect, it, Mock, vi } from "vitest";
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
+import { User } from "@/domain/models";
 import { PgUserRepo } from "@/infra/database";
 import { DbConnectionError } from "@/infra/errors";
+import { getUserMock } from "@/tests/domain/mocks";
 
 vi.mock("@prisma/client", () => ({
   PrismaClient: vi.fn(),
@@ -19,10 +21,13 @@ describe("PgUserRepo", () => {
   let PrismaClientSpy: Mock;
   let createUserSpy: Mock;
   let findUniqueUserSpy: Mock;
+  let mockedUser: User;
 
   beforeAll(() => {
+    mockedUser = getUserMock();
+
     createUserSpy = vi.fn();
-    findUniqueUserSpy = vi.fn();
+    findUniqueUserSpy = vi.fn().mockReturnValue(mockedUser);
     PrismaClientSpy = vi.fn().mockReturnValue({
       user: {
         create: createUserSpy,
@@ -89,6 +94,25 @@ describe("PgUserRepo", () => {
           email: input,
         },
       });
+    });
+
+    it("should return user on success", async () => {
+      const { sut } = makeSut();
+
+      const input = faker.internet.email();
+      const user = await sut.getUserByEmail(input);
+
+      expect(user).toMatchObject(mockedUser)
+    });
+
+    it("should return undefined on failure", async () => {
+      const { sut } = makeSut();
+      findUniqueUserSpy.mockResolvedValueOnce(undefined);
+
+      const input = faker.internet.email();
+      const user = await sut.getUserByEmail(input);
+
+      expect(user).toBe(undefined);
     });
 
     it("should throw DbConnectionError if findUnique throws", async () => {

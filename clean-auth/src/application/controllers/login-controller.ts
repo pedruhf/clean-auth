@@ -3,6 +3,7 @@ import { Login } from "@/domain/features";
 import {
   badRequest,
   HttpRequest,
+  HttpResponse,
   serverError,
   success,
 } from "@/application/helpers";
@@ -23,24 +24,11 @@ export class LoginController implements Controller {
     private readonly userRepo: GetUserByEmailRepository
   ) {}
 
-  async handle({ body }: HttpRequest): Promise<any> {
+  async handle({ body }: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ["email", "password"];
-      for (const field of requiredFields) {
-        if (!body?.[field]) {
-          return badRequest(
-            new RequiredFieldError(
-              RequiredFieldsInPortuguese[
-                field as keyof typeof RequiredFieldsInPortuguese
-              ]
-            )
-          );
-        }
-      }
-
-      const user = await this.userRepo.getUserByEmail(body?.email);
-      if (!user) {
-        return badRequest(new InvalidCredentialsError());
+      const error = await this.validate({ body });
+      if (error) {
+        return error;
       }
 
       const result = await this.remoteLogin.execute({
@@ -54,6 +42,26 @@ export class LoginController implements Controller {
       return success(result);
     } catch (error) {
       return serverError(<Error>error);
+    }
+  }
+
+  private async validate({ body }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
+    const requiredFields = ["email", "password"];
+    for (const field of requiredFields) {
+      if (!body?.[field]) {
+        return badRequest(
+          new RequiredFieldError(
+            RequiredFieldsInPortuguese[
+              field as keyof typeof RequiredFieldsInPortuguese
+            ]
+          )
+        );
+      }
+    }
+
+    const user = await this.userRepo.getUserByEmail(body?.email);
+    if (!user) {
+      return badRequest(new InvalidCredentialsError());
     }
   }
 }

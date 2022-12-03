@@ -24,22 +24,9 @@ export class SignUpController implements Controller {
 
   async handle({ body }: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ["name", "email", "password"];
-      for (const field of requiredFields) {
-        if (!body?.[field]) {
-          return badRequest(
-            new RequiredFieldError(
-              RequiredFieldsInPortuguese[
-                field as keyof typeof RequiredFieldsInPortuguese
-              ]
-            )
-          );
-        }
-      }
-
-      const foundedUser = await this.usersRepo.getUserByEmail(body?.email);
-      if (foundedUser) {
-        return badRequest(new EmailInUseError());
+      const error = await this.validate({ body });
+      if (error) {
+        return error;
       }
 
       await this.signUp.execute({
@@ -50,6 +37,26 @@ export class SignUpController implements Controller {
       return created();
     } catch (error) {
       return serverError(<Error>error);
+    }
+  }
+
+  private async validate({ body }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
+    const requiredFields = ["name", "email", "password"];
+    for (const field of requiredFields) {
+      if (!body?.[field]) {
+        return badRequest(
+          new RequiredFieldError(
+            RequiredFieldsInPortuguese[
+              field as keyof typeof RequiredFieldsInPortuguese
+            ]
+          )
+        );
+      }
+    }
+
+    const foundedUser = await this.usersRepo.getUserByEmail(body?.email);
+    if (foundedUser) {
+      return badRequest(new EmailInUseError());
     }
   }
 }

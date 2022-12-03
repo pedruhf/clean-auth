@@ -35,7 +35,7 @@ describe("JwtAdapter", () => {
 
       expect(signSpy).toHaveBeenCalledTimes(1);
       expect(signSpy).toHaveBeenCalledWith({ id }, "any_secret", {
-        expiresIn: JwtAdapter.expiresTimeInMs,
+        expiresIn: JwtAdapter.expiresTimeInSeconds,
       });
     });
 

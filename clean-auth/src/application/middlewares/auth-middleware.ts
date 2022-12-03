@@ -29,7 +29,7 @@ export class AuthMiddleware implements Middleware {
       const userId = this.token.decrypt(authorization);
       return success({ userId });
     } catch (error) {
-      return serverError(<Error>error);
+      return unauthorized(new UnauthorizedError());
     }
   }
 }

@@ -4,10 +4,10 @@ import { TokenDecrypter, TokenGenerator } from "@/data/gateways";
 import { UnauthorizedError } from "@/application/errors";
 
 export class JwtAdapter implements TokenGenerator, TokenDecrypter {
-  static expiresTimeInMs = 3 * 60 * 60 * 1000;
+  static expiresTimeInSeconds = 3 * 60 * 60; // 3 Horas
 
   generate(id: number): string {
-    const token = sign({ id }, "any_secret", { expiresIn: JwtAdapter.expiresTimeInMs });
+    const token = sign({ id }, "any_secret", { expiresIn: JwtAdapter.expiresTimeInSeconds });
     return token;
   }
 

@@ -5,7 +5,7 @@ import { expressMiddlewareAdapter } from "@/infra/express/adapters";
 import { Middleware } from "@/application/protocols";
 import { HttpResponse } from "@/application/helpers";
 import { NextFunction, Request, Response } from "express";
-import { AccessDeniedError } from "@/application/errors";
+import { UnauthorizedError } from "@/application/errors";
 
 class MiddlewareStub implements Middleware {
   async handle(httpRequest: any): Promise<HttpResponse<any>> {
@@ -51,11 +51,11 @@ describe("ExpressMiddlewareAdapter", () => {
     expect(handleSpy).toHaveBeenCalledWith(req.headers);
   });
 
-  it("should respond with statusCode 401 and AccessDeniedError", async () => {
+  it("should respond with statusCode 401 and UnauthorizedError", async () => {
     const { sut, middlewareStub } = makeSut();
     vi.spyOn(middlewareStub, "handle").mockResolvedValueOnce({
       statusCode: 401,
-      data: new AccessDeniedError(),
+      data: new UnauthorizedError(),
     });
 
 
@@ -65,7 +65,7 @@ describe("ExpressMiddlewareAdapter", () => {
     expect(statusSpy).toHaveBeenCalledWith(401);
     expect(jsonSpy).toHaveBeenCalledTimes(1);
     expect(jsonSpy).toHaveBeenCalledWith({
-      error: new AccessDeniedError().message,
+      error: new UnauthorizedError().message,
     });
   });
 

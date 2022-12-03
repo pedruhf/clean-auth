@@ -6,7 +6,7 @@ import {
 } from "@/application/helpers";
 import { Middleware } from "@/application/protocols";
 import { TokenDecrypter } from "@/data/gateways";
-import { AccessDeniedError } from "@/application/errors";
+import { UnauthorizedError } from "@/application/errors";
 
 type AuthMiddlewareRequest = {
   authorization?: string;
@@ -23,7 +23,7 @@ export class AuthMiddleware implements Middleware {
     try {
       const { authorization } = httpRequest;
       if (!authorization) {
-        return unauthorized(new AccessDeniedError());
+        return unauthorized(new UnauthorizedError());
       }
 
       const userId = this.token.decrypt(authorization);

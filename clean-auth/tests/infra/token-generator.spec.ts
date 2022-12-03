@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import { sign, verify } from "jsonwebtoken";
 
 import { JwtAdapter } from "@/infra";
-import { AccessDeniedError } from "@/application/errors";
+import { UnauthorizedError } from "@/application/errors";
 
 vi.mock("jsonwebtoken", () => ({
   sign: vi.fn(),
@@ -88,7 +88,7 @@ describe("JwtAdapter", () => {
 
       const encryptedValue = faker.internet.password();
 
-      expect(() => sut.decrypt(encryptedValue)).toThrow(new AccessDeniedError());
+      expect(() => sut.decrypt(encryptedValue)).toThrow(new UnauthorizedError());
     });
   });
 });

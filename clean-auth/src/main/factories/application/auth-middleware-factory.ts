@@ -1,4 +1,4 @@
-import { AuthMiddleware } from "@/application/middlewares/auth-middleware";
+import { AuthMiddleware } from "@/application/middlewares";
 import { Middleware } from "@/application/protocols";
 import { makeJwtAdapter } from "@/main/factories/infra";
 

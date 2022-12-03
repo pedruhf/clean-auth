@@ -1,6 +1,6 @@
 import { Controller } from "./controller";
 import { SignUp } from "@/domain/features";
-import { EmailInUseError, RequiredFieldError } from "@/domain/errors";
+import { EmailInUseError, RequiredFieldError } from "@/application/errors";
 import {
   badRequest,
   created,

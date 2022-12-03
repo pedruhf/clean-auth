@@ -1,7 +1,15 @@
 import { Controller } from "./controller";
 import { Login } from "@/domain/features";
-import { badRequest, HttpRequest, serverError, success } from "@/application/helpers";
-import { InvalidCredentialsError, RequiredFieldError } from "@/domain/errors";
+import {
+  badRequest,
+  HttpRequest,
+  serverError,
+  success,
+} from "@/application/helpers";
+import {
+  InvalidCredentialsError,
+  RequiredFieldError,
+} from "@/application/errors";
 import { GetUserByEmailRepository } from "@/data/gateways";
 
 enum RequiredFieldsInPortuguese {
@@ -19,21 +27,25 @@ export class LoginController implements Controller {
     try {
       const requiredFields = ["email", "password"];
       for (const field of requiredFields) {
-        if (!body[field]) {
+        if (!body?.[field]) {
           return badRequest(
-            new RequiredFieldError(RequiredFieldsInPortuguese[field])
+            new RequiredFieldError(
+              RequiredFieldsInPortuguese[
+                field as keyof typeof RequiredFieldsInPortuguese
+              ]
+            )
           );
         }
       }
 
-      const user = await this.userRepo.getUserByEmail(body.email);
+      const user = await this.userRepo.getUserByEmail(body?.email);
       if (!user) {
         return badRequest(new InvalidCredentialsError());
       }
 
       const result = await this.remoteLogin.execute({
-        email: body.email,
-        password: body.password,
+        email: body?.email,
+        password: body?.password,
       });
       if (!result?.accessToken) {
         return badRequest(new InvalidCredentialsError());
@@ -41,7 +53,7 @@ export class LoginController implements Controller {
 
       return success(result);
     } catch (error) {
-      return serverError(error);
+      return serverError(<Error>error);
     }
   }
 }

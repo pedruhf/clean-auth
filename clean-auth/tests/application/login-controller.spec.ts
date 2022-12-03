@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { faker } from "@faker-js/faker";
 
 import { Login } from "@/domain/features";
-import { InvalidCredentialsError, RequiredFieldError } from "@/domain/errors";
+import { InvalidCredentialsError, RequiredFieldError } from "@/application/errors";
 import { LoginController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
 import { GetUserByEmailRepository } from "@/data/gateways";

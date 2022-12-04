@@ -1,7 +1,9 @@
 import express, { Express, Router } from "express";
+import { serve, setup} from "swagger-ui-express";
 import { readdirSync } from "fs";
 import { join } from "path";
 
+import swaggerConfig from "@/main/docs";
 import { bodyParser, contentType, cors } from "@/infra/express/middlewares";
 
 export class ExpressAppAdapter {
@@ -10,6 +12,7 @@ export class ExpressAppAdapter {
 
   private constructor() {
     this.client = express();
+    this.setupDocs();
     this.setupMiddlewares();
     this.setupRoutes();
   }
@@ -42,5 +45,9 @@ export class ExpressAppAdapter {
         (await import(`../../../main/routes/${file}`)).default(router);
       }
     });
+  }
+
+  setupDocs(): void {
+    this.client.use("/api-docs", serve, setup(swaggerConfig))
   }
 }

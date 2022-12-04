@@ -38,9 +38,7 @@ export class LoginController implements Controller {
     }
   }
 
-  private async validate({
-    body,
-  }: HttpRequest): Promise<Error | undefined> {
+  private async validate({ body }: HttpRequest): Promise<Error | undefined> {
     const validators = [
       ...ValidatonBuilder.of({ value: body?.email, fieldName: "e-mail" }).required().build(),
       ...ValidatonBuilder.of({ value: body?.password, fieldName: "senha" }).required().build(),

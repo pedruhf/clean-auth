@@ -9,12 +9,7 @@ import {
 } from "@/application/helpers";
 import { InvalidCredentialsError } from "@/application/errors";
 import { GetUserByEmailRepository } from "@/data/gateways";
-import { GetEmailValidator, RequiredStringValidator } from "@/application/validation";
-
-enum RequiredFieldsInPortuguese {
-  email = "e-mail",
-  password = "senha",
-}
+import { EmailExistsValidator, ValidatonBuilder } from "@/application/validation";
 
 export class LoginController implements Controller {
   constructor(
@@ -26,7 +21,7 @@ export class LoginController implements Controller {
     try {
       const error = await this.validate({ body });
       if (error) {
-        return error;
+        return badRequest(error);
       }
 
       const result = await this.remoteLogin.execute({
@@ -45,16 +40,19 @@ export class LoginController implements Controller {
 
   private async validate({
     body,
-  }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
-    const requiredFields = ["email", "password"];
-    for (const field of requiredFields) {
-      const requiredStringValidator = new RequiredStringValidator(body?.[field], RequiredFieldsInPortuguese[field as keyof typeof RequiredFieldsInPortuguese]);
-      const stringValidatorError = requiredStringValidator.validate();
-      if (stringValidatorError) return badRequest(stringValidatorError);
+  }: HttpRequest): Promise<Error | undefined> {
+    const validators = [
+      ...ValidatonBuilder.of({ value: body?.email, fieldName: "e-mail" }).required().build(),
+      ...ValidatonBuilder.of({ value: body?.password, fieldName: "senha" }).required().build(),
+    ];
+
+    for (const validator of validators) {
+      const error = await validator.validate();
+      if (error) return error;
     }
 
-    const getEmailValidator = new GetEmailValidator(this.userRepo, body?.email);
-    const getEmailValidatorError = await getEmailValidator.validate();
-    if (getEmailValidatorError) return badRequest(new InvalidCredentialsError());
+    const emailExistsValidator = new EmailExistsValidator(this.userRepo, body?.email);
+    const emailExistsValidatorError = await emailExistsValidator.validate();
+    if (emailExistsValidatorError) return new InvalidCredentialsError();
   }
 }

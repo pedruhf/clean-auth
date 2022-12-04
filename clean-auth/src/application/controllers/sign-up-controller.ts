@@ -8,13 +8,7 @@ import {
   serverError,
 } from "@/application/helpers";
 import { GetUserByEmailRepository } from "@/data/gateways";
-import { EmailValidator, RequiredStringValidator } from "@/application/validation";
-
-enum RequiredFieldsInPortuguese {
-  name = "nome",
-  email = "e-mail",
-  password = "senha",
-}
+import { EmailInUseValidator, ValidatonBuilder } from "@/application/validation";
 
 export class SignUpController implements Controller {
   constructor(
@@ -26,7 +20,7 @@ export class SignUpController implements Controller {
     try {
       const error = await this.validate({ body });
       if (error) {
-        return error;
+        return badRequest(error);
       }
 
       await this.signUp.execute({
@@ -40,16 +34,20 @@ export class SignUpController implements Controller {
     }
   }
 
-  private async validate({ body }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
-    const requiredFields = ["name", "email", "password"];
-    for (const field of requiredFields) {
-      const requiredStringValidator = new RequiredStringValidator(body?.[field], RequiredFieldsInPortuguese[field as keyof typeof RequiredFieldsInPortuguese]);
-      const stringValidatorError = requiredStringValidator.validate();
-      if (stringValidatorError) return badRequest(stringValidatorError);
+  private async validate({ body }: HttpRequest): Promise<Error | undefined> {
+    const validators = [
+      ...ValidatonBuilder.of({ value: body?.name, fieldName: "nome" }).required().minLength(3).build(),
+      ...ValidatonBuilder.of({ value: body?.email, fieldName: "e-mail" }).required().email().build(),
+      ...ValidatonBuilder.of({ value: body?.password, fieldName: "senha" }).required().minLength(8).build(),
+    ];
+
+    for (const validator of validators) {
+      const error = await validator.validate();
+      if (error) return error;
     }
 
-    const emailValidator = new EmailValidator(this.userRepo, body?.email);
-    const emailValidatorError = await emailValidator.validate();
-    if (emailValidatorError) return badRequest(emailValidatorError);
+    const emailInUseValidator = new EmailInUseValidator(this.userRepo, body?.email);
+    const emailInUseValidatorError = await emailInUseValidator.validate();
+    if (emailInUseValidatorError) return emailInUseValidatorError;
   }
 }

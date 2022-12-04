@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 
 import { Controller } from "@/application/controllers";
-import { HttpRequest } from "@/application/helpers";
+import { HttpRequest, HttpResponse } from "@/application/helpers";
 
 export const adaptRoute = (controller: Controller) => {
-  return async (req: Request, res: Response) => {
+  return async (req: Request, res: Response): Promise<HttpResponse> => {
     const request: HttpRequest = {
       body: req.body,
       headers: req.headers,

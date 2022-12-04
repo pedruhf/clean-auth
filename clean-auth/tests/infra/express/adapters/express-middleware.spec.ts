@@ -3,7 +3,7 @@ import { mockReq, mockRes } from "sinon-express-mock";
 
 import { expressMiddlewareAdapter } from "@/infra/express/adapters";
 import { Middleware } from "@/application/protocols";
-import { HttpResponse } from "@/application/helpers";
+import { HttpResponse, unauthorized } from "@/application/helpers";
 import { NextFunction, Request, Response } from "express";
 import { UnauthorizedError } from "@/application/errors";
 
@@ -53,10 +53,7 @@ describe("ExpressMiddlewareAdapter", () => {
 
   it("should respond with statusCode 401 and UnauthorizedError", async () => {
     const { sut, middlewareStub } = makeSut();
-    vi.spyOn(middlewareStub, "handle").mockResolvedValueOnce({
-      statusCode: 401,
-      data: new UnauthorizedError(),
-    });
+    vi.spyOn(middlewareStub, "handle").mockResolvedValueOnce(unauthorized(new UnauthorizedError()));
 
 
     await sut(req, res, nextFunction);

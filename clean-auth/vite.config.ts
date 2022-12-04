@@ -22,6 +22,7 @@ export const baseConfig: UserConfig = {
         "**/coverage/**",
         "**/src/domain/**",
         "**/src/main/**",
+        "**/application/errors/**",
         "**/src/infra/express/adapters/express-app.ts"
       ],
     },

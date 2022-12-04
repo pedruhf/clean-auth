@@ -59,7 +59,7 @@ describe("PgUserRepo", () => {
       expect(createUserSpy).toHaveBeenCalledWith({
         data: {
           name: input.name,
-          email: input.email,
+          email: input.email.toLowerCase(),
           password: input.password,
         },
       });
@@ -91,7 +91,7 @@ describe("PgUserRepo", () => {
       expect(findUniqueUserSpy).toHaveBeenCalledTimes(1);
       expect(findUniqueUserSpy).toHaveBeenCalledWith({
         where: {
-          email: input,
+          email: input.toLowerCase(),
         },
       });
     });

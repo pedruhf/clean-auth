@@ -1,3 +1,4 @@
+import { User } from "@/domain/models";
 import { Login } from "@/domain/features";
 import {
   EncryptComparer,
@@ -13,7 +14,7 @@ export class RemoteLogin {
   ) {}
 
   async execute({ email, password }: Login.Input): Promise<Login.Output> {
-    const user = await this.userRepo.getUserByEmail(email);
+    const user = await this.userRepo.getUserByEmail(email) as User;
     const matchPassword = this.encryptComparer.compare(user.password, password);
     if (!matchPassword) {
       return;

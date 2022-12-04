@@ -4,9 +4,7 @@ export namespace Login {
     password: string;
   }
 
-  export type Output = {
-    accessToken: string
-  };
+  export type Output = { accessToken: string } | undefined;
 }
 
 export interface Login {

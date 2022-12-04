@@ -24,7 +24,7 @@ export class PgUserRepo implements UserRepo {
       await this.client.user.create({
         data: {
           name,
-          email,
+          email: email.toLowerCase(),
           password,
         },
       });
@@ -37,7 +37,7 @@ export class PgUserRepo implements UserRepo {
     try {
       const user = await this.client.user.findUnique({
         where: {
-          email,
+          email: email.toLowerCase(),
         },
       });
 

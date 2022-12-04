@@ -1,7 +1,7 @@
 import { Validator } from "@/application/protocols";
-import { RequiredFieldError } from "../errors";
+import { RequiredFieldError } from "@/application/errors";
 
-export class Required implements Validator {
+export class RequiredValidator implements Validator {
   constructor(
     protected readonly value: any,
     protected readonly fieldName: string
@@ -12,7 +12,7 @@ export class Required implements Validator {
   }
 }
 
-export class RequiredString extends Required {
+export class RequiredStringValidator extends RequiredValidator {
   constructor(
     protected readonly value: string,
     protected readonly fieldName: string

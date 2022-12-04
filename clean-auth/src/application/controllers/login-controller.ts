@@ -7,11 +7,9 @@ import {
   serverError,
   success,
 } from "@/application/helpers";
-import {
-  InvalidCredentialsError,
-  RequiredFieldError,
-} from "@/application/errors";
+import { InvalidCredentialsError } from "@/application/errors";
 import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetEmailValidator, RequiredStringValidator } from "@/application/validation";
 
 enum RequiredFieldsInPortuguese {
   email = "e-mail",
@@ -45,23 +43,18 @@ export class LoginController implements Controller {
     }
   }
 
-  private async validate({ body }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
+  private async validate({
+    body,
+  }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
     const requiredFields = ["email", "password"];
     for (const field of requiredFields) {
-      if (!body?.[field]) {
-        return badRequest(
-          new RequiredFieldError(
-            RequiredFieldsInPortuguese[
-              field as keyof typeof RequiredFieldsInPortuguese
-            ]
-          )
-        );
-      }
+      const requiredStringValidator = new RequiredStringValidator(body?.[field], RequiredFieldsInPortuguese[field as keyof typeof RequiredFieldsInPortuguese]);
+      const stringValidatorError = requiredStringValidator.validate();
+      if (stringValidatorError) return badRequest(stringValidatorError);
     }
 
-    const user = await this.userRepo.getUserByEmail(body?.email);
-    if (!user) {
-      return badRequest(new InvalidCredentialsError());
-    }
+    const getEmailValidator = new GetEmailValidator(this.userRepo, body?.email);
+    const getEmailValidatorError = await getEmailValidator.validate();
+    if (getEmailValidatorError) return badRequest(new InvalidCredentialsError());
   }
 }

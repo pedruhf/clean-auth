@@ -11,3 +11,10 @@ export class EmailInUseError extends Error {
     this.name = "EmailInUseError";
   }
 }
+
+export class EmailNotFoundError extends Error {
+  constructor() {
+    super("E-mail não encontrado");
+    this.name = "EmailNotFoundError";
+  }
+}

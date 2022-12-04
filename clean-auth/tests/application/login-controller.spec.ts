@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { faker } from "@faker-js/faker";
 
 import { Login } from "@/domain/features";
-import { InvalidCredentialsError, RequiredFieldError } from "@/application/errors";
+import { BadlyFormattedEmail, InvalidCredentialsError, RequiredFieldError } from "@/application/errors";
 import { LoginController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
 import { GetUserByEmailRepository } from "@/data/gateways";
@@ -18,7 +18,7 @@ class RemoteLoginStub implements Login {
 }
 
 class UserRepoStub implements GetUserByEmailRepository {
-  async getUserByEmail(email: string): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
     return Promise.resolve(getUserMock());
   }
 }
@@ -31,7 +31,18 @@ const makeSut = () => {
 };
 
 describe("Login Controller", () => {
-  it("should return RequiredFieldError if email is not provided", async () => {
+  let mockedRequest: HttpRequest;
+
+  beforeAll(() => {
+    mockedRequest = {
+      body: {
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      },
+    };
+  })
+
+  it("should return statusCode 400 and RequiredFieldError if email is not provided", async () => {
     const { sut } = makeSut();
 
     const request: HttpRequest = {
@@ -47,7 +58,7 @@ describe("Login Controller", () => {
     });
   });
 
-  it("should return RequiredFieldError if password is not provided", async () => {
+  it("should return statusCode 400 and RequiredFieldError if password is not provided", async () => {
     const { sut } = makeSut();
 
     const request: HttpRequest = {
@@ -63,33 +74,11 @@ describe("Login Controller", () => {
     });
   });
 
-  it("should call GetUserByEmail with correct input", async () => {
-    const { sut, userRepo } = makeSut();
-    const getUserByEmailSpy = vi.spyOn(userRepo, "getUserByEmail");
-
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    await sut.handle(request);
-
-    expect(getUserByEmailSpy).toHaveBeenCalledTimes(1);
-    expect(getUserByEmailSpy).toHaveBeenCalledWith(request.body.email);
-  });
-
-  it("should return InvalidCredentialsError if not found user", async () => {
+  it("should return statusCode 400 and InvalidCredentialsError if not found user", async () => {
     const { sut, userRepo } = makeSut();
     vi.spyOn(userRepo, "getUserByEmail").mockResolvedValueOnce(undefined);
 
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    const result = await sut.handle(request);
+    const result = await sut.handle(mockedRequest);
 
     expect(result).toEqual({
       statusCode: 400,
@@ -101,29 +90,17 @@ describe("Login Controller", () => {
     const { sut, remoteLoginStub } = makeSut();
     const remoteLoginSpy = vi.spyOn(remoteLoginStub, "execute")
 
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    await sut.handle(request);
+    await sut.handle(mockedRequest);
 
     expect(remoteLoginSpy).toHaveBeenCalledTimes(1);
-    expect(remoteLoginSpy).toHaveBeenCalledWith(request.body);
+    expect(remoteLoginSpy).toHaveBeenCalledWith(mockedRequest.body);
   });
 
   it("should return InvalidCredentialsError if RemoteLogin returns falsy", async () => {
     const { sut, remoteLoginStub } = makeSut();
-    vi.spyOn(remoteLoginStub, "execute").mockReturnValueOnce(undefined);
+    vi.spyOn(remoteLoginStub, "execute").mockImplementationOnce(() => Promise.resolve(undefined));
 
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    const result = await sut.handle(request);
+    const result = await sut.handle(mockedRequest);
 
     expect(result).toEqual({
       statusCode: 400,
@@ -134,13 +111,7 @@ describe("Login Controller", () => {
   it("should status 200 and accessToken on success", async () => {
     const { sut } = makeSut();
 
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    const result = await sut.handle(request);
+    const result = await sut.handle(mockedRequest);
 
     expect(result).toEqual({
       statusCode: 200,
@@ -154,13 +125,7 @@ describe("Login Controller", () => {
     const { sut, userRepo } = makeSut();
     vi.spyOn(userRepo, "getUserByEmail").mockRejectedValueOnce(new Error("getUserByEmail error"));
 
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    const result = await sut.handle(request);
+    const result = await sut.handle(mockedRequest);
 
     expect(result).toEqual({
       statusCode: 500,
@@ -172,13 +137,7 @@ describe("Login Controller", () => {
     const { sut, remoteLoginStub } = makeSut();
     vi.spyOn(remoteLoginStub, "execute").mockRejectedValueOnce(new Error("remoteLogin error"));
 
-    const request: HttpRequest = {
-      body: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      },
-    };
-    const result = await sut.handle(request);
+    const result = await sut.handle(mockedRequest);
 
     expect(result).toEqual({
       statusCode: 500,

@@ -1,6 +1,5 @@
 import { Controller } from "./controller";
 import { SignUp } from "@/domain/features";
-import { EmailInUseError, RequiredFieldError } from "@/application/errors";
 import {
   badRequest,
   created,
@@ -19,7 +18,7 @@ enum RequiredFieldsInPortuguese {
 
 export class SignUpController implements Controller {
   constructor(
-    private readonly usersRepo: GetUserByEmailRepository,
+    private readonly userRepo: GetUserByEmailRepository,
     private readonly signUp: SignUp
   ) {}
 
@@ -43,14 +42,13 @@ export class SignUpController implements Controller {
 
   private async validate({ body }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
     const requiredFields = ["name", "email", "password"];
-
     for (const field of requiredFields) {
       const requiredStringValidator = new RequiredStringValidator(body?.[field], RequiredFieldsInPortuguese[field as keyof typeof RequiredFieldsInPortuguese]);
       const stringValidatorError = requiredStringValidator.validate();
       if (stringValidatorError) return badRequest(stringValidatorError);
     }
 
-    const emailValidator = new EmailValidator(this.usersRepo, body?.email);
+    const emailValidator = new EmailValidator(this.userRepo, body?.email);
     const emailValidatorError = await emailValidator.validate();
     if (emailValidatorError) return badRequest(emailValidatorError);
   }

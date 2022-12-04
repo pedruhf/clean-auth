@@ -1,5 +1,5 @@
 import { Validator } from "@/application/protocols";
-import { BadlyFormattedEmail, EmailInUseError } from "@/application/errors";
+import { BadlyFormattedEmail, EmailInUseError, EmailNotFoundError } from "@/application/errors";
 import { GetUserByEmailRepository } from "@/data/gateways";
 
 export class EmailValidator implements Validator {
@@ -28,5 +28,19 @@ export class EmailValidator implements Validator {
 
     const inUseError = await this.inUseValidator();
     if (inUseError) return inUseError;
+  }
+}
+
+export class GetEmailValidator implements Validator {
+  constructor(
+    private readonly usersRepo: GetUserByEmailRepository,
+    private readonly value: string
+  ) {}
+
+  async validate (): Promise<Error | undefined> {
+    const foundedEmail = await this.usersRepo.getUserByEmail(this.value);
+    if (!foundedEmail) {
+      return new EmailNotFoundError();
+    }
   }
 }

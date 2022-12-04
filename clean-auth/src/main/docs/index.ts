@@ -1,5 +1,7 @@
 import { loginPath, signUpPath } from "./paths/auth";
 import { userSchema } from "./schemas/user";
+import { auth } from "./schemas/auth";
+import { abcPath } from "./paths/abc";
 
 export default {
   "openapi": "3.0.0",
@@ -12,14 +14,22 @@ export default {
   servers: [{
     url: "/api"
   }],
-  tags: [{
-    name: "Autenticação"
-  }],
+  tags: [
+    { name: "Autenticação" },
+    { name: "Testes" }
+  ],
   paths: {
     "/sign-up": signUpPath,
     "/login": loginPath,
+    "/abc": abcPath,
   },
   schemas: {
     user: userSchema,
+    auth: auth
+  },
+  components: {
+    securitySchemes: {
+      auth,
+    }
   }
-}
+};

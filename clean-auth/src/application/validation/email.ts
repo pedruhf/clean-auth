@@ -1,23 +1,23 @@
 import { Validator } from "@/application/protocols";
 import { BadlyFormattedEmail, EmailInUseError } from "@/application/errors";
-import { UserRepo } from "@/data/gateways";
+import { GetUserByEmailRepository } from "@/data/gateways";
 
 export class EmailValidator implements Validator {
   constructor(
-    private readonly usersRepo: UserRepo,
+    private readonly usersRepo: GetUserByEmailRepository,
     private readonly value: string
   ) {}
 
   formatValidator(): Error | undefined {
-    const emailRegex = new RegExp(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i);
-    if (!emailRegex.test(this.value)) {
+    const emailRegex = new RegExp(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/);
+    if (!this.value.match(emailRegex)) {
       return new BadlyFormattedEmail();
     }
   }
 
   async inUseValidator(): Promise<Error | undefined> {
     const foundedEmail = await this.usersRepo.getUserByEmail(this.value);
-    if (!foundedEmail) {
+    if (foundedEmail) {
       return new EmailInUseError();
     }
   }

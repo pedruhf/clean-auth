@@ -2,13 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 
 import { SignUp } from "@/domain/features";
-import { EmailInUseError, RequiredFieldError } from "@/application/errors";
+import { BadlyFormattedEmail, EmailInUseError, RequiredFieldError } from "@/application/errors";
 import { SignUpController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
 import { GetUserByEmailRepository } from "@/data/gateways";
 import { User } from "@/domain/models";
 import { getUserMock } from "@/tests/domain/mocks";
-import { DbConnectionError } from "@/infra/errors";
 
 class RemoteSignUpStub implements SignUp {
   async execute(input: SignUp.Input): Promise<void> {}
@@ -28,12 +27,12 @@ const makeSut = () => {
 };
 
 describe("SignUp Controller", () => {
-  it("should return RequiredFieldError if name is not provided", async () => {
+  it("should return statusCode 400 with RequiredFieldError if name is not provided", async () => {
     const { sut } = makeSut();
 
     const request: HttpRequest = {
       body: {
-        email: faker.internet.email(),
+        email: faker.internet.email().toLowerCase(),
         password: faker.internet.password(),
       },
     };
@@ -45,7 +44,7 @@ describe("SignUp Controller", () => {
     });
   });
 
-  it("should return RequiredFieldError if email is not provided", async () => {
+  it("should return statusCode 400 and RequiredFieldError if email is not provided", async () => {
     const { sut } = makeSut();
 
     const request: HttpRequest = {
@@ -62,13 +61,13 @@ describe("SignUp Controller", () => {
     });
   });
 
-  it("should return RequiredFieldError if password is not provided", async () => {
+  it("should return statusCode 400 and RequiredFieldError if password is not provided", async () => {
     const { sut } = makeSut();
 
     const request: HttpRequest = {
       body: {
         name: faker.name.fullName(),
-        email: faker.internet.email(),
+        email: faker.internet.email().toLowerCase(),
       },
     };
     const result = await sut.handle(request);
@@ -79,19 +78,21 @@ describe("SignUp Controller", () => {
     });
   });
 
-  it("should call EmailRepository with correct input", async () => {
-    const { sut, usersRepoStub } = makeSut();
-    const getUserByEmailSpy = vi.spyOn(usersRepoStub, "getUserByEmail");
+  it("should return statusCode 400 and BadlyFormattedEmail", async () => {
+    const { sut } = makeSut();
 
     const body = {
       name: faker.name.fullName(),
-      email: faker.internet.email(),
+      email: "invalid_email",
       password: faker.internet.password(),
     };
-    await sut.handle({ body });
 
-    expect(getUserByEmailSpy).toHaveBeenCalledTimes(1);
-    expect(getUserByEmailSpy).toHaveBeenCalledWith(body.email);
+    const result = await sut.handle({ body });
+
+    expect(result).toEqual({
+      statusCode: 400,
+      data: new BadlyFormattedEmail(),
+    });
   });
 
   it("should return statusCode 400 and EmailInUseError", async () => {
@@ -102,9 +103,10 @@ describe("SignUp Controller", () => {
 
     const body = {
       name: faker.name.fullName(),
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase().toLowerCase(),
       password: faker.internet.password(),
     };
+
     const result = await sut.handle({ body });
 
     expect(result).toEqual({
@@ -121,7 +123,7 @@ describe("SignUp Controller", () => {
 
     const body = {
       name: faker.name.fullName(),
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: faker.internet.password(),
     };
     const result = await sut.handle({ body });
@@ -138,7 +140,7 @@ describe("SignUp Controller", () => {
 
     const body = {
       name: faker.name.fullName(),
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: faker.internet.password(),
     };
     await sut.handle({ body });
@@ -152,7 +154,7 @@ describe("SignUp Controller", () => {
 
     const body = {
       name: faker.name.fullName(),
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: faker.internet.password(),
     };
     const result = await sut.handle({ body });
@@ -170,7 +172,7 @@ describe("SignUp Controller", () => {
 
     const body = {
       name: faker.name.fullName(),
-      email: faker.internet.email(),
+      email: faker.internet.email().toLowerCase(),
       password: faker.internet.password(),
     };
     const result = await sut.handle({ body });

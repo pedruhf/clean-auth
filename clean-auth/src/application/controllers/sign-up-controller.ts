@@ -9,6 +9,7 @@ import {
   serverError,
 } from "@/application/helpers";
 import { GetUserByEmailRepository } from "@/data/gateways";
+import { EmailValidator, RequiredStringValidator } from "@/application/validation";
 
 enum RequiredFieldsInPortuguese {
   name = "nome",
@@ -42,21 +43,15 @@ export class SignUpController implements Controller {
 
   private async validate({ body }: HttpRequest): Promise<HttpResponse<Error> | undefined> {
     const requiredFields = ["name", "email", "password"];
+
     for (const field of requiredFields) {
-      if (!body?.[field]) {
-        return badRequest(
-          new RequiredFieldError(
-            RequiredFieldsInPortuguese[
-              field as keyof typeof RequiredFieldsInPortuguese
-            ]
-          )
-        );
-      }
+      const requiredStringValidator = new RequiredStringValidator(body?.[field], RequiredFieldsInPortuguese[field as keyof typeof RequiredFieldsInPortuguese]);
+      const stringValidatorError = requiredStringValidator.validate();
+      if (stringValidatorError) return badRequest(stringValidatorError);
     }
 
-    const foundedUser = await this.usersRepo.getUserByEmail(body?.email);
-    if (foundedUser) {
-      return badRequest(new EmailInUseError());
-    }
+    const emailValidator = new EmailValidator(this.usersRepo, body?.email);
+    const emailValidatorError = await emailValidator.validate();
+    if (emailValidatorError) return badRequest(emailValidatorError);
   }
 }

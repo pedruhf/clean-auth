@@ -3,13 +3,13 @@ import { mockReq, mockRes } from "sinon-express-mock";
 
 import { adaptRoute } from "@/infra/express/adapters";
 import { Controller } from "@/application/controllers";
-import { HttpResponse, serverError } from "@/application/helpers";
+import { HttpResponse, HttpStatusCode, serverError } from "@/application/helpers";
 import { Request, Response } from "express";
 
 class ControllerStub implements Controller {
   async handle(httpRequest: any): Promise<HttpResponse<any>> {
     return Promise.resolve({
-      statusCode: 200,
+      statusCode: HttpStatusCode.ok,
       data: { anyData: "any_data" },
     });
   }

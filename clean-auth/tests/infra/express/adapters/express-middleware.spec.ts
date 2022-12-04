@@ -3,14 +3,14 @@ import { mockReq, mockRes } from "sinon-express-mock";
 
 import { expressMiddlewareAdapter } from "@/infra/express/adapters";
 import { Middleware } from "@/application/protocols";
-import { HttpResponse, unauthorized } from "@/application/helpers";
-import { NextFunction, Request, Response } from "express";
+import { HttpResponse, HttpStatusCode, serverError, unauthorized } from "@/application/helpers";
+import { Request, Response } from "express";
 import { UnauthorizedError } from "@/application/errors";
 
 class MiddlewareStub implements Middleware {
   async handle(httpRequest: any): Promise<HttpResponse<any>> {
     return Promise.resolve({
-      statusCode: 200,
+      statusCode: HttpStatusCode.ok,
       data: { userId: 1 },
     });
   }
@@ -68,10 +68,7 @@ describe("ExpressMiddlewareAdapter", () => {
 
   it("should respond with statusCode 500 and Error", async () => {
     const { sut, middlewareStub } = makeSut();
-    vi.spyOn(middlewareStub, "handle").mockResolvedValueOnce({
-      statusCode: 500,
-      data: new Error("any_error"),
-    });
+    vi.spyOn(middlewareStub, "handle").mockResolvedValueOnce(serverError(new Error("any_error")));
 
     await sut(req, res, nextFunction);
 

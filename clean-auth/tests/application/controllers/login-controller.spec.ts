@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 import { Login } from "@/domain/features";
 import { BadlyFormattedEmail, InvalidCredentialsError, RequiredFieldError } from "@/application/errors";
 import { LoginController } from "@/application/controllers";
-import { HttpRequest } from "@/application/helpers";
+import { HttpRequest, HttpStatusCode } from "@/application/helpers";
 import { GetUserByEmailRepository } from "@/data/gateways";
 import { User } from "@/domain/models";
 import { getUserMock } from "@/tests/domain/mocks";
@@ -114,7 +114,7 @@ describe("Login Controller", () => {
     const result = await sut.handle(mockedRequest);
 
     expect(result).toEqual({
-      statusCode: 200,
+      statusCode: HttpStatusCode.ok,
       data: {
         accessToken: "accessToken"
       }

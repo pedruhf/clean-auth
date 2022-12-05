@@ -7,12 +7,12 @@ import {
   HttpResponse,
   serverError,
 } from "@/application/helpers";
-import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/gateways";
 import { EmailInUseValidator, ValidatonBuilder } from "@/application/validation";
 
 export class SignUpController implements Controller {
   constructor(
-    private readonly userRepo: GetUserByEmailRepository,
+    private readonly userRepo: GetUserByEmailRepo,
     private readonly signUp: SignUp
   ) {}
 

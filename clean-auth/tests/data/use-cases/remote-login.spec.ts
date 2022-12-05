@@ -5,14 +5,14 @@ import { RemoteLogin } from "@/data/use-cases";
 import { User } from "@/domain/models";
 import {
   EncryptComparer,
-  GetUserByEmailRepository,
+  GetUserByEmailRepo,
   TokenGenerator,
 } from "@/data/gateways";
 import { getUserMock } from "@/tests/domain/mocks";
 
-export class UsersRepoStub implements GetUserByEmailRepository {
+export class UsersRepoStub implements GetUserByEmailRepo {
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Promise.resolve(undefined);
+    return Promise.resolve(mockedUser);
   }
 }
 
@@ -31,8 +31,6 @@ export class TokenGeneratorStub implements TokenGenerator {
 const mockedUser = getUserMock();
 const makeSut = () => {
   const usersRepoStub = new UsersRepoStub();
-  vi.spyOn(usersRepoStub, "getUserByEmail").mockResolvedValueOnce(mockedUser);
-
   const encryptComparerStub = new EncryptComparerStub();
   const tokenGeneratorStub = new TokenGeneratorStub();
   const sut = new RemoteLogin(

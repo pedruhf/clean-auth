@@ -4,6 +4,7 @@ export namespace SaveUserRepo {
     email: string;
     password: string;
   };
+
   export type Output = void;
 }
 
@@ -13,8 +14,22 @@ export interface SaveUserRepo {
 
 import { User } from "@/domain/models";
 
-export interface GetUserByEmailRepository {
+export interface GetUserByEmailRepo {
   getUserByEmail: (email: string) => Promise<User | undefined>;
 }
 
-export type UserRepo = SaveUserRepo & GetUserByEmailRepository;
+export namespace GetUsersRepo {
+  export type Input = {
+    page: number;
+    limit: number;
+  }
+
+  export type Output = User[];
+}
+
+export interface GetUsersRepo {
+  getAll: (input: GetUsersRepo.Input) => Promise<GetUsersRepo.Output>
+}
+
+
+export type UserRepo = SaveUserRepo & GetUserByEmailRepo;

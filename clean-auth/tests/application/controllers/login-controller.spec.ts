@@ -5,7 +5,7 @@ import { Login } from "@/domain/features";
 import { BadlyFormattedEmail, InvalidCredentialsError, RequiredFieldError } from "@/application/errors";
 import { LoginController } from "@/application/controllers";
 import { HttpRequest, HttpStatusCode } from "@/application/helpers";
-import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/gateways";
 import { User } from "@/domain/models";
 import { getUserMock } from "@/tests/domain/mocks";
 
@@ -17,7 +17,7 @@ class RemoteLoginStub implements Login {
   }
 }
 
-class UserRepoStub implements GetUserByEmailRepository {
+class UserRepoStub implements GetUserByEmailRepo {
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Promise.resolve(getUserMock());
   }

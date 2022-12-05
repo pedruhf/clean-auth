@@ -8,13 +8,13 @@ import {
   success,
 } from "@/application/helpers";
 import { InvalidCredentialsError } from "@/application/errors";
-import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/gateways";
 import { EmailExistsValidator, ValidatonBuilder } from "@/application/validation";
 
 export class LoginController implements Controller {
   constructor(
     private readonly remoteLogin: Login,
-    private readonly userRepo: GetUserByEmailRepository
+    private readonly userRepo: GetUserByEmailRepo
   ) {}
 
   async handle({ body }: HttpRequest): Promise<HttpResponse> {

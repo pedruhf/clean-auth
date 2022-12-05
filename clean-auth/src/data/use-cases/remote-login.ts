@@ -2,13 +2,13 @@ import { User } from "@/domain/models";
 import { Login } from "@/domain/features";
 import {
   EncryptComparer,
-  GetUserByEmailRepository,
+  GetUserByEmailRepo,
   TokenGenerator,
 } from "@/data/gateways";
 
 export class RemoteLogin {
   constructor(
-    private readonly userRepo: GetUserByEmailRepository,
+    private readonly userRepo: GetUserByEmailRepo,
     private readonly encryptComparer: EncryptComparer,
     private readonly tokenGenerator: TokenGenerator
   ) {}

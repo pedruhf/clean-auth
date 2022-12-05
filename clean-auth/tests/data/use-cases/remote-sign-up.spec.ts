@@ -5,12 +5,12 @@ import { RemoteSignUp } from "@/data/use-cases";
 import { User } from "@/domain/models";
 import {
   Encrypter,
-  GetUserByEmailRepository,
+  GetUserByEmailRepo,
   SaveUserRepo,
 } from "@/data/gateways";
 import { getUserMock } from "@/tests/domain/mocks";
 
-export class UsersRepoStub implements SaveUserRepo, GetUserByEmailRepository {
+export class UsersRepoStub implements SaveUserRepo, GetUserByEmailRepo {
   async save(input: SaveUserRepo.Input): Promise<void> {}
 
   async getUserByEmail(email: string): Promise<User | undefined> {

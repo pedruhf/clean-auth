@@ -2,13 +2,13 @@ import { describe, it } from "vitest";
 import { faker } from "@faker-js/faker";
 
 import { EmailFormatValidator, EmailExistsValidator, EmailInUseValidator } from "@/application/validation";
-import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/gateways";
 import { User } from "@/domain/models";
 import { BadlyFormattedEmail, EmailInUseError, EmailNotFoundError } from "@/application/errors";
 import { getUserMock } from "@/tests/domain/mocks";
 
 const mockedUser = getUserMock();
-class UserRepoStub implements GetUserByEmailRepository {
+class UserRepoStub implements GetUserByEmailRepo {
   async getUserByEmail (email: string): Promise<User | undefined> {
     return Promise.resolve(mockedUser);
   }

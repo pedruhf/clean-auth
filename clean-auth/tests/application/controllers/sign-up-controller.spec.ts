@@ -5,7 +5,7 @@ import { SignUp } from "@/domain/features";
 import { BadlyFormattedEmail, EmailInUseError, RequiredFieldError } from "@/application/errors";
 import { SignUpController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
-import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/gateways";
 import { User } from "@/domain/models";
 import { getUserMock } from "@/tests/domain/mocks";
 
@@ -13,7 +13,7 @@ class RemoteSignUpStub implements SignUp {
   async execute(input: SignUp.Input): Promise<void> {}
 }
 
-export class UsersRepoStub implements GetUserByEmailRepository {
+export class UsersRepoStub implements GetUserByEmailRepo {
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Promise.resolve(undefined);
   }

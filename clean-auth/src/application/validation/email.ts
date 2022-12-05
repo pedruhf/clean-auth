@@ -1,6 +1,6 @@
 import { Validator } from "@/application/protocols";
 import { BadlyFormattedEmail, EmailInUseError, EmailNotFoundError } from "@/application/errors";
-import { GetUserByEmailRepository } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/gateways";
 
 export class EmailFormatValidator implements Validator {
   constructor(
@@ -17,7 +17,7 @@ export class EmailFormatValidator implements Validator {
 
 export class EmailInUseValidator implements Validator {
   constructor(
-    private readonly usersRepo: GetUserByEmailRepository,
+    private readonly usersRepo: GetUserByEmailRepo,
     private readonly value: string
   ) {}
 
@@ -32,7 +32,7 @@ export class EmailInUseValidator implements Validator {
 
 export class EmailExistsValidator implements Validator {
   constructor(
-    private readonly usersRepo: GetUserByEmailRepository,
+    private readonly usersRepo: GetUserByEmailRepo,
     private readonly value: string
   ) {}
 

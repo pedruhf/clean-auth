@@ -6,12 +6,13 @@ import {
   makeAuthMiddleware,
   makeRoleMiddleware,
 } from "@/main/factories/application/middlewares";
+import { Roles } from "@/domain/models";
 
 export default (router: Router) => {
   router.get(
     "/users",
     expressMiddlewareAdapter(makeAuthMiddleware()),
-    expressMiddlewareAdapter(makeRoleMiddleware(["admin", "user"])),
+    expressMiddlewareAdapter(makeRoleMiddleware([Roles.admin, Roles.developer, Roles.user])),
     adaptRoute(makeGetUsersController())
   );
 };

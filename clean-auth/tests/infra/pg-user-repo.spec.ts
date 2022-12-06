@@ -21,17 +21,22 @@ describe("PgUserRepo", () => {
   let PrismaClientSpy: Mock;
   let createUserSpy: Mock;
   let findUniqueUserSpy: Mock;
+  let findManyUsersSpy: Mock;
   let mockedUser: User;
+  let mockedUserList: User[];
 
   beforeAll(() => {
     mockedUser = getUserMock();
+    mockedUserList = [getUserMock(), getUserMock(), getUserMock()]
 
     createUserSpy = vi.fn();
     findUniqueUserSpy = vi.fn().mockReturnValue(mockedUser);
+    findManyUsersSpy = vi.fn().mockReturnValue(mockedUserList);
     PrismaClientSpy = vi.fn().mockReturnValue({
       user: {
         create: createUserSpy,
         findUnique: findUniqueUserSpy,
+        findMany: findManyUsersSpy,
       },
     });
     vi.mocked(PrismaClient).mockImplementation(PrismaClientSpy);
@@ -121,6 +126,47 @@ describe("PgUserRepo", () => {
 
       const input = faker.internet.email();
       const resultPromise = sut.getUserByEmail(input);
+
+      await expect(resultPromise).rejects.toThrow(new DbConnectionError());
+    });
+  });
+
+  describe("getAll", () => {
+    const input = { page: 2, limit: 10 };
+
+    it("should call findMany with correct fields", async () => {
+      const { sut } = makeSut();
+
+      await sut.getAll(input);
+
+      expect(findManyUsersSpy).toHaveBeenCalledTimes(1);
+      expect(findManyUsersSpy).toHaveBeenCalledWith({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          updatedAt: true,
+          password: false,
+         },
+        skip: 10,
+        take: 10,
+      });
+    });
+
+    it("should return a list of users on success", async () => {
+      const { sut } = makeSut();
+
+      const user = await sut.getAll(input);
+
+      expect(user).toMatchObject(mockedUserList)
+    });
+
+    it("should throw DbConnectionError if findMany throws", async () => {
+      const { sut } = makeSut();
+      findManyUsersSpy.mockRejectedValueOnce(new Error("findMany error"));
+
+      const resultPromise = sut.getAll(input);
 
       await expect(resultPromise).rejects.toThrow(new DbConnectionError());
     });

@@ -33,6 +33,7 @@ describe("ExpressRouterAdapter", () => {
       body: "any_body",
       headers: "any_headers",
       params: "any_params",
+      query: "any_query"
     });
     res = mockRes();
   });
@@ -53,6 +54,7 @@ describe("ExpressRouterAdapter", () => {
       body: "any_body",
       headers: "any_headers",
       params: "any_params",
+      query: "any_query"
     });
   });
 

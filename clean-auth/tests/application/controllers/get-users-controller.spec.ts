@@ -24,7 +24,7 @@ describe("GetUsers Controller", () => {
 
   beforeAll(() => {
     request = {
-      params: { page: faker.datatype.number({ min: 1 }), limit: faker.datatype.number({ min: 1 }) },
+      query: { page: faker.datatype.number({ min: 1 }), limit: faker.datatype.number({ min: 1 }) },
     }
   })
 
@@ -35,7 +35,7 @@ describe("GetUsers Controller", () => {
     await sut.handle(request);
 
     expect(executeSpy).toHaveBeenCalledTimes(1);
-    expect(executeSpy).toHaveBeenCalledWith(request.params);
+    expect(executeSpy).toHaveBeenCalledWith(request.query);
   });
 
   it("should call GetUsersRepo with default input", async () => {

@@ -30,7 +30,7 @@ export class RoleMiddleware implements Middleware {
 
       return success({ userRole: user.role });
     } catch (error) {
-      return unauthorized(new AccessDeniedError());
+      return forbidden(new AccessDeniedError());
     }
   }
 }

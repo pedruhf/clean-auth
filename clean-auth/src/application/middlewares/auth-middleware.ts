@@ -13,9 +13,7 @@ type AuthMiddlewareResponse = HttpResponse<{ userId: string } | Error>;
 export class AuthMiddleware implements Middleware {
   constructor(private readonly token: TokenDecrypter) {}
 
-  async handle(
-    httpRequest: AuthMiddlewareRequest
-  ): Promise<AuthMiddlewareResponse> {
+  async handle(httpRequest: AuthMiddlewareRequest): Promise<AuthMiddlewareResponse> {
     try {
       const { authorization } = httpRequest;
       if (!authorization) {

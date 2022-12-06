@@ -72,7 +72,7 @@ export class PgUserRepo implements UserRepo {
 
   async getById (id: number): Promise<User | undefined> {
     try {
-      const user = await this.client.user.findFirst({
+      const user = await this.client.user.findUnique({
         where: {
           id,
         },

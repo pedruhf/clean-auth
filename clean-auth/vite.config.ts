@@ -29,6 +29,7 @@ export const baseConfig: UserConfig = {
     reporters: "verbose",
     exclude: ["**/node_modules/**", "**/dist/**", "./postgres-data"],
     passWithNoTests: true,
+    clearMocks: true
   },
 };
 

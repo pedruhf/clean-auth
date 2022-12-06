@@ -172,4 +172,47 @@ describe("PgUserRepo", () => {
       await expect(resultPromise).rejects.toThrow(new DbConnectionError());
     });
   });
+
+  describe("getById", () => {
+    const input = mockedUser?.id;
+
+    it("should call findUnique with correct id", async () => {
+      const { sut } = makeSut();
+
+      await sut.getById(input);
+
+      expect(findUniqueUserSpy).toHaveBeenCalledTimes(1);
+      expect(findUniqueUserSpy).toHaveBeenCalledWith({
+        where: {
+          id: input,
+        },
+      });
+    });
+
+    it("should return user on success", async () => {
+      const { sut } = makeSut();
+
+      const user = await sut.getById(input);
+
+      expect(user).toMatchObject(mockedUser)
+    });
+
+    it("should return undefined on failure", async () => {
+      const { sut } = makeSut();
+      findUniqueUserSpy.mockResolvedValueOnce(undefined);
+
+      const user = await sut.getById(input);
+
+      expect(user).toBe(undefined);
+    });
+
+    it("should throw DbConnectionError if findUnique throws", async () => {
+      const { sut } = makeSut();
+      findUniqueUserSpy.mockRejectedValueOnce(new Error("findUnique error"));
+
+      const resultPromise = sut.getById(input);
+
+      await expect(resultPromise).rejects.toThrow(new DbConnectionError());
+    });
+  });
 });

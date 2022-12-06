@@ -32,4 +32,4 @@ export interface GetUsersRepo {
 }
 
 
-export type UserRepo = SaveUserRepo & GetUserByEmailRepo;
+export type UserRepo = SaveUserRepo & GetUserByEmailRepo & GetUsersRepo;

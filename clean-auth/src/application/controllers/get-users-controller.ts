@@ -6,12 +6,12 @@ import { User } from "@/domain/models";
 export class GetUsersController implements Controller {
   constructor(private readonly dbGetUsers: GetUsers) {}
 
-  async handle ({ params }: HttpRequest): Promise<HttpResponse<any>> {
+  async handle ({ query }: HttpRequest): Promise<HttpResponse<any>> {
     try {
       let result: User[];
 
-      if (Number(params?.page) && Number(params?.limit)) {
-        result = await this.dbGetUsers.execute({ page: Number(params?.page), limit: Number(params?.limit) });
+      if (Number(query?.page) && Number(query?.limit)) {
+        result = await this.dbGetUsers.execute({ page: Number(query?.page), limit: Number(query?.limit) });
       } else {
         const defaultParams = { page: 1, limit: 20 };
         result = await this.dbGetUsers.execute(defaultParams);

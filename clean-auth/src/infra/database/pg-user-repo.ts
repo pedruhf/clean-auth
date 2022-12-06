@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 import { User } from "@/domain/models";
-import { SaveUserRepo, UserRepo } from "@/data/gateways";
+import { GetUsersRepo, SaveUserRepo, UserRepo } from "@/data/gateways";
 import { DbConnectionError } from "@/infra/errors";
 
 export class PgUserRepo implements UserRepo {
@@ -28,6 +28,26 @@ export class PgUserRepo implements UserRepo {
           password,
         },
       });
+    } catch {
+      throw new DbConnectionError();
+    }
+  }
+
+  async getAll ({ page, limit }: GetUsersRepo.Input): Promise<GetUsersRepo.Output> {
+    try {
+      const users = await this.client.user.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          updatedAt: true,
+          password: false
+        },
+      });
+      return users as User[];
     } catch {
       throw new DbConnectionError();
     }

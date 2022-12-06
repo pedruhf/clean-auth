@@ -1,6 +1,5 @@
 import {
   HttpResponse,
-  serverError,
   success,
   unauthorized,
 } from "@/application/helpers";
@@ -8,10 +7,7 @@ import { Middleware } from "@/application/protocols";
 import { TokenDecrypter } from "@/data/gateways";
 import { UnauthorizedError } from "@/application/errors";
 
-type AuthMiddlewareRequest = {
-  authorization?: string;
-};
-
+type AuthMiddlewareRequest = { authorization?: string;};
 type AuthMiddlewareResponse = HttpResponse<{ userId: string } | Error>;
 
 export class AuthMiddleware implements Middleware {

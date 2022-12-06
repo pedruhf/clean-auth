@@ -69,4 +69,20 @@ export class PgUserRepo implements UserRepo {
       throw new DbConnectionError();
     }
   }
+
+  async getById (id: number): Promise<User | undefined> {
+    try {
+      const user = await this.client.user.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      if (!user) return;
+
+      return user;
+    } catch {
+      throw new DbConnectionError();
+    }
+  };
 }

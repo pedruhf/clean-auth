@@ -1,4 +1,5 @@
-import { Controller, GetUsersController } from "@/application/controllers";
+import { GetUsersController } from "@/application/controllers";
+import { Controller } from "@/application/protocols";
 import { makeDbGetUsers } from "@/main/factories/data";
 
 export const makeGetUsersController = (): Controller => {

@@ -11,7 +11,7 @@ class MiddlewareStub implements Middleware {
   async handle(httpRequest: any): Promise<HttpResponse<any>> {
     return Promise.resolve({
       statusCode: HttpStatusCode.ok,
-      data: { userId: 1 },
+      data: {},
     });
   }
 }
@@ -31,7 +31,13 @@ describe("ExpressMiddlewareAdapter", () => {
   let jsonSpy: SpyInstance;
 
   beforeAll(() => {
-    req = mockReq();
+    req = mockReq({
+      body: "any_body",
+      headers: { headersData: "any_headers" },
+      locals: { localsData: "any_locals" },
+      params: "any_params",
+      query: "any_query"
+    });
     res = mockRes();
   });
 
@@ -48,7 +54,7 @@ describe("ExpressMiddlewareAdapter", () => {
     await sut(req, res, nextFunction);
 
     expect(handleSpy).toHaveBeenCalledTimes(1);
-    expect(handleSpy).toHaveBeenCalledWith(req.headers);
+    expect(handleSpy).toHaveBeenCalledWith({ ...req.headers, ...req.locals });
   });
 
   it("should respond with statusCode 401 and UnauthorizedError", async () => {
@@ -93,7 +99,7 @@ describe("ExpressMiddlewareAdapter", () => {
 
     await sut(req, res, nextFunction);
 
-    expect(req.locals).toEqual({ userId: 1 })
+    expect(req.locals).toEqual({ localsData: "any_locals" })
     expect(nextFunction).toHaveBeenCalledTimes(1);
   });
 });

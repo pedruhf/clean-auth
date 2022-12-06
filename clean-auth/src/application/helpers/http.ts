@@ -3,6 +3,7 @@ export enum HttpStatusCode {
   created = 201,
   badRequest = 400,
   unauthorized = 401,
+  forbidden = 403,
   serverError = 500,
 }
 
@@ -35,6 +36,11 @@ export const badRequest = (error: Error): HttpResponse<Error> => ({
 
 export const unauthorized = (error: Error): HttpResponse<Error> => ({
   statusCode: HttpStatusCode.unauthorized,
+  data: error,
+});
+
+export const forbidden = (error: Error): HttpResponse<Error> => ({
+  statusCode: HttpStatusCode.forbidden,
   data: error,
 });
 

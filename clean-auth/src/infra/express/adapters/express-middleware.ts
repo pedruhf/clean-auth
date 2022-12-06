@@ -4,7 +4,7 @@ import { Middleware } from "@/application/protocols";
 
 export const expressMiddlewareAdapter = (middleware: Middleware) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const request = req.headers;
+    const request = { ...req.headers, ...req.locals };
 
     const { statusCode, data } = await middleware.handle(request);
     if (data instanceof Error) {

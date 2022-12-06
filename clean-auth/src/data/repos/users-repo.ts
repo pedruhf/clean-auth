@@ -31,5 +31,9 @@ export interface GetUsersRepo {
   getAll: (input: GetUsersRepo.Input) => Promise<GetUsersRepo.Output>
 }
 
+export interface GetUserById {
+  getById: (id: number) => Promise<User | undefined>
+}
 
-export type UserRepo = SaveUserRepo & GetUserByEmailRepo & GetUsersRepo;
+
+export type UserRepo = SaveUserRepo & GetUserByEmailRepo & GetUsersRepo & GetUserById;

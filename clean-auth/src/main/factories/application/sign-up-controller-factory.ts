@@ -1,4 +1,5 @@
-import { Controller, SignUpController } from "@/application/controllers";
+import { SignUpController } from "@/application/controllers";
+import { Controller } from "@/application/protocols";
 import { makeRemoteSignUp } from "@/main/factories/data";
 import { makeUserRepo } from "@/main/factories/infra";
 

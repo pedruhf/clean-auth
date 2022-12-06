@@ -2,7 +2,7 @@ import { describe, it, Mock, SpyInstance } from "vitest";
 import { mockReq, mockRes } from "sinon-express-mock";
 
 import { adaptRoute } from "@/infra/express/adapters";
-import { Controller } from "@/application/controllers";
+import { Controller } from "@/application/protocols";
 import { HttpResponse, HttpStatusCode, serverError } from "@/application/helpers";
 import { Request, Response } from "express";
 

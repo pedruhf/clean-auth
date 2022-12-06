@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { faker } from "@faker-js/faker";
 
-import { RequiredFieldError } from "@/application/errors";
 import { GetUsersController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
 import { GetUsers } from "@/domain/features";

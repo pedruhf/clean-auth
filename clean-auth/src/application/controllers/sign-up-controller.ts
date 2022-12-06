@@ -1,4 +1,4 @@
-import { Controller } from "./controller";
+import { Controller } from "@/application/protocols";
 import { SignUp } from "@/domain/features";
 import {
   badRequest,
@@ -7,7 +7,7 @@ import {
   HttpResponse,
   serverError,
 } from "@/application/helpers";
-import { GetUserByEmailRepo } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 import { EmailInUseValidator, ValidatonBuilder } from "@/application/validation";
 
 export class SignUpController implements Controller {

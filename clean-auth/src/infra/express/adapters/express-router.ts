@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { Controller } from "@/application/controllers";
+import { Controller } from "@/application/protocols";
 import { HttpRequest, HttpResponse } from "@/application/helpers";
 
 export const adaptRoute = (controller: Controller) => {

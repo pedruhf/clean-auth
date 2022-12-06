@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it, Mock, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 import { sign, verify } from "jsonwebtoken";
 
-import { JwtAdapter } from "@/infra";
+import { JwtAdapter } from "@/infra/adapters";
 import { UnauthorizedError } from "@/application/errors";
 
 vi.mock("jsonwebtoken", () => ({

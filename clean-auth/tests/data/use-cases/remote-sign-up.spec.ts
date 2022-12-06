@@ -3,11 +3,8 @@ import { faker } from "@faker-js/faker";
 
 import { RemoteSignUp } from "@/data/use-cases";
 import { User } from "@/domain/models";
-import {
-  Encrypter,
-  GetUserByEmailRepo,
-  SaveUserRepo,
-} from "@/data/gateways";
+import { Encrypter } from "@/data/gateways";
+import { GetUserByEmailRepo, SaveUserRepo } from "@/data/repos";
 import { getUserMock } from "@/tests/domain/mocks";
 
 export class UsersRepoStub implements SaveUserRepo, GetUserByEmailRepo {

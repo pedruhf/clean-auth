@@ -1,5 +1,6 @@
 import { SignUp } from "@/domain/features";
-import { Encrypter, SaveUserRepo } from "@/data/gateways";
+import { Encrypter } from "@/data/gateways";
+import { SaveUserRepo } from "@/data/repos";
 
 export class RemoteSignUp implements SignUp {
   constructor(

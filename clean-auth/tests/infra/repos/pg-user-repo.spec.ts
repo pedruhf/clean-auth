@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
 
 import { User } from "@/domain/models";
-import { PgUserRepo } from "@/infra/database";
+import { PgUserRepo } from "@/infra/database/repos";
 import { DbConnectionError } from "@/infra/errors";
 import { getUserMock } from "@/tests/domain/mocks";
 

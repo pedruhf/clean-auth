@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 import { faker } from "@faker-js/faker";
 
 import { EmailFormatValidator, EmailExistsValidator, EmailInUseValidator } from "@/application/validation";
-import { GetUserByEmailRepo } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 import { User } from "@/domain/models";
 import { BadlyFormattedEmail, EmailInUseError, EmailNotFoundError } from "@/application/errors";
 import { getUserMock } from "@/tests/domain/mocks";

@@ -1,4 +1,4 @@
-import { Controller } from "./controller";
+import { Controller } from "@/application/protocols";
 import { HttpRequest, HttpResponse, serverError, success } from "@/application/helpers";
 import { GetUsers } from "@/domain/features";
 import { User } from "@/domain/models";

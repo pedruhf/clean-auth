@@ -1,6 +1,7 @@
-import { Controller, LoginController } from "@/application/controllers";
+import { LoginController } from "@/application/controllers";
+import { Controller } from "@/application/protocols";
 import { makeRemoteLogin } from "@/main/factories/data";
-import { makeUserRepo } from "../infra";
+import { makeUserRepo } from "@/main/factories/infra";
 
 export const makeLoginController = (): Controller => {
   const remoteLogin = makeRemoteLogin();

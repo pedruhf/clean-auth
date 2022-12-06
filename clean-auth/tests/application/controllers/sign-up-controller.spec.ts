@@ -5,7 +5,7 @@ import { SignUp } from "@/domain/features";
 import { BadlyFormattedEmail, EmailInUseError, RequiredFieldError } from "@/application/errors";
 import { SignUpController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
-import { GetUserByEmailRepo } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 import { User } from "@/domain/models";
 import { getUserMock } from "@/tests/domain/mocks";
 

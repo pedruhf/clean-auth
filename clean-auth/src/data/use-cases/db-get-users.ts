@@ -1,5 +1,5 @@
 import { GetUsers } from "@/domain/features";
-import { GetUsersRepo } from "@/data/gateways";
+import { GetUsersRepo } from "@/data/repos";
 
 export class DbGetUsers implements GetUsers {
   constructor (private readonly userRepo: GetUsersRepo) {}

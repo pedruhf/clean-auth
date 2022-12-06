@@ -1,6 +1,6 @@
 import { Validator } from "@/application/protocols";
 import { BadlyFormattedEmail, EmailInUseError, EmailNotFoundError } from "@/application/errors";
-import { GetUserByEmailRepo } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 
 export class EmailFormatValidator implements Validator {
   constructor(

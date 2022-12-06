@@ -5,7 +5,7 @@ import { Login } from "@/domain/features";
 import { InvalidCredentialsError, RequiredFieldError } from "@/application/errors";
 import { LoginController } from "@/application/controllers";
 import { HttpRequest, HttpStatusCode } from "@/application/helpers";
-import { GetUserByEmailRepo } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 import { User } from "@/domain/models";
 import { getUserMock } from "@/tests/domain/mocks";
 

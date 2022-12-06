@@ -3,11 +3,8 @@ import { faker } from "@faker-js/faker";
 
 import { RemoteLogin } from "@/data/use-cases";
 import { User } from "@/domain/models";
-import {
-  EncryptComparer,
-  GetUserByEmailRepo,
-  TokenGenerator,
-} from "@/data/gateways";
+import { EncryptComparer, TokenGenerator } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 import { getUserMock } from "@/tests/domain/mocks";
 
 export class UsersRepoStub implements GetUserByEmailRepo {

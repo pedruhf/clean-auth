@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { GetUsersRepo } from "@/data/gateways";
+import { GetUsersRepo } from "@/data/repos";
 import { GetUsers } from "@/domain/features";
 import { DbGetUsers } from "@/data/use-cases";
 import { getUserMock } from "@/tests/domain/mocks";

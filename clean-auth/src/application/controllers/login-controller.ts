@@ -1,4 +1,4 @@
-import { Controller } from "./controller";
+import { Controller } from "@/application/protocols";
 import { Login } from "@/domain/features";
 import {
   badRequest,
@@ -8,7 +8,7 @@ import {
   success,
 } from "@/application/helpers";
 import { InvalidCredentialsError } from "@/application/errors";
-import { GetUserByEmailRepo } from "@/data/gateways";
+import { GetUserByEmailRepo } from "@/data/repos";
 import { EmailExistsValidator, ValidatonBuilder } from "@/application/validation";
 
 export class LoginController implements Controller {

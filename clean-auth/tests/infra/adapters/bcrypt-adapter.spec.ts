@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it, Mock, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 import { hashSync, compareSync } from "bcrypt";
 
-import { BcryptAdapter } from "@/infra";
+import { BcryptAdapter } from "@/infra/adapters";
 
 vi.mock("bcrypt", () => ({
   hashSync: vi.fn(),

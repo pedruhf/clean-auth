@@ -9,6 +9,7 @@ import {
 import { GetRoleByNameRepo } from "@/data/repos";
 import { CreateRole } from "@/domain/features";
 import { ValidatonBuilder } from "@/application/validation";
+import { UniqueFieldInUseError } from "@/application/errors";
 
 export class CreateRoleController implements Controller {
   constructor(
@@ -25,7 +26,7 @@ export class CreateRoleController implements Controller {
 
       await this.createRole.execute({
         name: body?.name,
-        permissions: body?.permissions
+        permissions: body?.permissions,
       });
       return created();
     } catch (error) {
@@ -35,13 +36,26 @@ export class CreateRoleController implements Controller {
 
   private async validate({ body }: HttpRequest): Promise<Error | undefined> {
     const validators = [
-      ...ValidatonBuilder.of({ value: body?.name, fieldName: "nome" }).required().minLength(3).build(),
-      ...ValidatonBuilder.of({ value: body?.permissions, fieldName: "permissões" }).required().build(),
+      ...ValidatonBuilder.of({ value: body?.name, fieldName: "nome" })
+        .required()
+        .minLength(3)
+        .build(),
+      ...ValidatonBuilder.of({
+        value: body?.permissions,
+        fieldName: "permissões",
+      })
+        .required()
+        .build(),
     ];
 
     for (const validator of validators) {
       const error = await validator.validate();
       if (error) return error;
+    }
+
+    const role = await this.roleRepo.getByName(body?.name);
+    if (role) {
+      return new UniqueFieldInUseError("cargo", "nome");
     }
   }
 }

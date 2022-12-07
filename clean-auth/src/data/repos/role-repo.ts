@@ -14,7 +14,7 @@ export interface SaveRole {
 }
 
 export interface GetRoleByNameRepo {
-  getByName: (name: string) => Promise<Role>;
+  getByName: (name: string) => Promise<Role | undefined>;
 }
 
 export type RoleRepo = SaveRole;

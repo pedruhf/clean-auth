@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 import { RoleRepo, SaveRole } from "@/data/repos";
 import { DbConnectionError } from "@/infra/errors";
+import { Role } from "@/domain/models";
 
 export class PgRoleRepo implements RoleRepo {
   private static instance?: PgRoleRepo;
@@ -26,6 +27,21 @@ export class PgRoleRepo implements RoleRepo {
           permissions,
         },
       });
+    } catch {
+      throw new DbConnectionError();
+    }
+  }
+
+  async getByName(name: string): Promise<Role | undefined> {
+    try {
+      const role = await this.client.role.findUnique({
+        where: {
+          name,
+        },
+      });
+
+      if (!role) return;
+      return role;
     } catch {
       throw new DbConnectionError();
     }

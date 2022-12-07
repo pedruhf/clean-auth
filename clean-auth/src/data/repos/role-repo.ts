@@ -17,4 +17,4 @@ export interface GetRoleByNameRepo {
   getByName: (name: string) => Promise<Role | undefined>;
 }
 
-export type RoleRepo = SaveRole;
+export type RoleRepo = SaveRole & GetRoleByNameRepo;

@@ -12,8 +12,8 @@ export enum Permissions {
 
 export type Role = {
   id: number;
-  name: Roles;
-  permissions: Permissions[];
+  name: string;
+  permissions: string[];
   createdAt: Date;
   updatedAt: Date;
 };

@@ -73,7 +73,7 @@ describe("SignUp Controller", () => {
 
   it("should return statusCode 400 and UniqueFieldInUseError if role already exists", async () => {
     const { sut, roleRepoStub } = makeSut();
-    vi.spyOn(roleRepoStub, "getByName").mockResolvedValueOnce(getRoleMock() as Role);
+    vi.spyOn(roleRepoStub, "getByName").mockResolvedValueOnce(getRoleMock());
 
     const result = await sut.handle(request);
 

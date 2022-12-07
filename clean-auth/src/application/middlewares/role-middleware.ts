@@ -2,9 +2,10 @@ import { forbidden, HttpResponse, success, unauthorized } from "@/application/he
 import { Middleware } from "@/application/protocols";
 import { AccessDeniedError } from "@/application/errors";
 import { GetUserById } from "@/data/repos";
+import { Role } from "@/domain/models";
 
 type RoleMiddlewareRequest = { userId: string };
-type RoleMiddlewareResponse = HttpResponse<{ userRole: string } | Error>;
+type RoleMiddlewareResponse = HttpResponse<{ userRole: Role } | Error>;
 
 export class RoleMiddleware implements Middleware {
   constructor(
@@ -24,7 +25,7 @@ export class RoleMiddleware implements Middleware {
         return forbidden(new AccessDeniedError());
       }
 
-      if (!this.allowedRoles.includes(user.role)) {
+      if (!this.allowedRoles.includes(user.role.name)) {
         return forbidden(new AccessDeniedError());
       }
 

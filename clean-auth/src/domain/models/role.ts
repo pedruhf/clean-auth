@@ -6,8 +6,10 @@ export enum Roles {
 
 export enum Permissions {
   createAdmin = "create_admin",
+  makeAdmin = "make_admin",
   createDeveloper = "create_developer",
-  listAll = "list_all",
+  makeDeveloper = "make_developer",
+  listAllUsers = "list_all_users",
 }
 
 export type Role = {
@@ -18,14 +20,10 @@ export type Role = {
   updatedAt: Date;
 };
 
-export const getAdminPermissions = () => [
-  Permissions.createAdmin,
-  Permissions.createDeveloper,
-  Permissions.listAll,
-];
+export const getAdminPermissions = () => Object.values(Permissions);
 
 export const getDeveloperPermissions = () => [
-  Permissions.listAll,
+  Permissions.listAllUsers,
 ];
 
 export const getUserPermissions = () => [];

@@ -7,12 +7,14 @@ import {
   HttpResponse,
   serverError,
 } from "@/application/helpers";
-import { GetUserByEmailRepo } from "@/data/repos";
+import { GetRoleByNameRepo, GetUserByEmailRepo } from "@/data/repos";
 import { EmailInUseValidator, ValidatonBuilder } from "@/application/validation";
+import { Roles } from "@/domain/models";
 
 export class SignUpController implements Controller {
   constructor(
     private readonly userRepo: GetUserByEmailRepo,
+    private readonly roleRepo: GetRoleByNameRepo,
     private readonly signUp: SignUp
   ) {}
 
@@ -27,6 +29,7 @@ export class SignUpController implements Controller {
         name: body?.name,
         email: body?.email,
         password: body?.password,
+        roleName: body?.roleName || Roles.user,
       });
       return created();
     } catch (error) {
@@ -45,6 +48,9 @@ export class SignUpController implements Controller {
       const error = await validator.validate();
       if (error) return error;
     }
+
+    const role = await this.roleRepo.getByName(body?.roleName || Roles.user);
+    if (!role) return new Error("Cargo não encontrado");
 
     const emailInUseValidator = new EmailInUseValidator(this.userRepo, body?.email);
     const emailInUseValidatorError = await emailInUseValidator.validate();

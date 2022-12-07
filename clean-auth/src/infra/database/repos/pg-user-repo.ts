@@ -19,13 +19,14 @@ export class PgUserRepo implements UserRepo {
     return this.instance;
   }
 
-  async save({ name, email, password }: SaveUserRepo.Input): Promise<void> {
+  async save({ name, email, password, roleName }: SaveUserRepo.Input): Promise<void> {
     try {
       await this.client.user.create({
         data: {
-          name,
-          email: email.toLowerCase(),
+          name: name.trim(),
+          email: email.toLowerCase().trim(),
           password,
+          roleName,
         },
       });
     } catch {
@@ -60,6 +61,16 @@ export class PgUserRepo implements UserRepo {
         where: {
           email: email.toLowerCase(),
         },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          roleName: false,
+          createdAt: true,
+          updatedAt: true,
+          password: true,
+        },
       });
 
       if (!user) return;
@@ -75,6 +86,16 @@ export class PgUserRepo implements UserRepo {
       const user = await this.client.user.findUnique({
         where: {
           id,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          roleName: false,
+          createdAt: true,
+          updatedAt: true,
+          password: false,
         },
       });
 

@@ -12,8 +12,9 @@ export class RemoteSignUp implements SignUp {
     name,
     email,
     password,
+    roleName
   }: SignUp.Input): Promise<SignUp.Output> {
     const encryptedPassword = this.encrypter.encrypt(password);
-    await this.usersRepo.save({ name, email, password: encryptedPassword });
+    await this.usersRepo.save({ name, email, password: encryptedPassword, roleName });
   }
 }

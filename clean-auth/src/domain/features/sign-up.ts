@@ -3,6 +3,7 @@ export namespace SignUp {
     name: string;
     email: string;
     password: string;
+    roleName: string;
   }
 
   export type Output = void;

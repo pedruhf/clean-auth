@@ -1,4 +1,4 @@
-import { RemoteSignUp } from "@/data/use-cases";
+import { RemoteSignUp } from "@/data/use-cases/auth";
 import { SignUp } from "@/domain/features";
 import { makeEncrypterAdapter, makeUserRepo } from "@/main/factories/infra";
 

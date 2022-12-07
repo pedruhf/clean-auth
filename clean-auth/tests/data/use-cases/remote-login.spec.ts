@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { faker } from "@faker-js/faker";
 
-import { RemoteLogin } from "@/data/use-cases";
+import { RemoteLogin } from "@/data/use-cases/auth";
 import { User } from "@/domain/models";
 import { EncryptComparer, TokenGenerator } from "@/data/gateways";
 import { GetUserByEmailRepo } from "@/data/repos";

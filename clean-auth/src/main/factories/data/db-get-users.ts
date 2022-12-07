@@ -1,4 +1,4 @@
-import { DbGetUsers } from "@/data/use-cases";
+import { DbGetUsers } from "@/data/use-cases/user";
 import { GetUsers } from "@/domain/features";
 import { makeUserRepo } from "@/main/factories/infra";
 

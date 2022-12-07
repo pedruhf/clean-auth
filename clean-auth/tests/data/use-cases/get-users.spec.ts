@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { GetUsersRepo } from "@/data/repos";
 import { GetUsers } from "@/domain/features";
-import { DbGetUsers } from "@/data/use-cases";
+import { DbGetUsers } from "@/data/use-cases/user";
 import { getUserMock } from "@/tests/domain/mocks";
 
 export class UsersRepoStub implements GetUsersRepo {

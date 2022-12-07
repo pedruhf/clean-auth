@@ -1,4 +1,4 @@
-import { Permissions } from "@/domain/models";
+import { Permissions, Role } from "@/domain/models";
 
 export namespace SaveRole {
   export type Input = {
@@ -11,6 +11,10 @@ export namespace SaveRole {
 
 export interface SaveRole {
   save: (input: SaveRole.Input) => Promise<SaveRole.Output>;
+}
+
+export interface GetRoleByNameRepo {
+  getByName: (name: string) => Promise<Role>;
 }
 
 export type RoleRepo = SaveRole;

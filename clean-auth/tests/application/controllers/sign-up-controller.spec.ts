@@ -6,7 +6,7 @@ import { BadlyFormattedEmail, EmailInUseError, RequiredFieldError } from "@/appl
 import { SignUpController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
 import { GetRoleByNameRepo, GetUserByEmailRepo } from "@/data/repos";
-import { Role, User } from "@/domain/models";
+import { Role, Roles, User } from "@/domain/models";
 import { getRoleMock, getUserMock } from "@/tests/domain/mocks";
 
 class RemoteSignUpStub implements SignUp {
@@ -152,6 +152,55 @@ describe("SignUp Controller", () => {
     })
   });
 
+  it("should call RoleRepo with correct input", async () => {
+    const { sut, roleRepoStub } = makeSut();
+    const getByNameSpy = vi.spyOn(roleRepoStub, "getByName");
+
+    await sut.handle(request);
+
+    expect(getByNameSpy).toHaveBeenCalledTimes(1);
+    expect(getByNameSpy).toHaveBeenCalledWith(request.body.roleName);
+  });
+
+  it("should call RoleRepo with default input when roleName is not provided", async () => {
+    const { sut, roleRepoStub } = makeSut();
+    const getByNameSpy = vi.spyOn(roleRepoStub, "getByName");
+
+    const req = {
+      body: { ...request.body, roleName: undefined }
+    }
+    await sut.handle(req);
+
+    expect(getByNameSpy).toHaveBeenCalledTimes(1);
+    expect(getByNameSpy).toHaveBeenCalledWith(Roles.user);
+  });
+
+  it("should return statusCode 400 and role not found", async () => {
+    const { sut, roleRepoStub } = makeSut();
+    vi.spyOn(roleRepoStub, "getByName").mockResolvedValueOnce(undefined);
+
+    const result = await sut.handle(request);
+
+    expect(result).toEqual({
+      statusCode: 400,
+      data: new Error("Cargo não encontrado"),
+    });
+  });
+
+  it("should return 500 and repass error if EmailRepository throws", async () => {
+    const { sut, roleRepoStub } = makeSut();
+    vi.spyOn(roleRepoStub, "getByName").mockRejectedValueOnce(
+      new Error("getByName error")
+    );
+
+    const result = await sut.handle(request);
+
+    expect(result).toEqual({
+      statusCode: 500,
+      data: new Error("getByName error"),
+    })
+  });
+
   it("should call RemoteSignUp with correct input", async () => {
     const { sut, remoteSignUpStub } = makeSut();
     const executeSpy = vi.spyOn(remoteSignUpStub, "execute");
@@ -160,16 +209,6 @@ describe("SignUp Controller", () => {
 
     expect(executeSpy).toHaveBeenCalledTimes(1);
     expect(executeSpy).toHaveBeenCalledWith(request.body);
-  });
-
-  it("should return 201 on success", async () => {
-    const { sut } = makeSut();
-
-    const result = await sut.handle(request);
-
-    expect(result).toEqual({
-      statusCode: 201,
-    });
   });
 
   it("should return 500 if RemoteSignUp throws", async () => {
@@ -183,6 +222,16 @@ describe("SignUp Controller", () => {
     expect(result).toEqual({
       statusCode: 500,
       data: new Error("signUp Error"),
+    });
+  });
+
+  it("should return 201 on success", async () => {
+    const { sut } = makeSut();
+
+    const result = await sut.handle(request);
+
+    expect(result).toEqual({
+      statusCode: 201,
     });
   });
 });

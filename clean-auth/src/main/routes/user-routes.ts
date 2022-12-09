@@ -12,7 +12,7 @@ export default (router: Router) => {
   router.get(
     "/users",
     expressMiddlewareAdapter(makeAuthMiddleware()),
-    expressMiddlewareAdapter(makeRoleMiddleware([Roles.admin, Roles.developer, Roles.user])),
+    expressMiddlewareAdapter(makeRoleMiddleware([Roles.admin, Roles.developer])),
     adaptRoute(makeGetUsersController())
   );
 };

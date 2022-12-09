@@ -66,7 +66,7 @@ describe("AuthMiddleware", () => {
 
   it("should return statusCode 403 and AccessDeniedError if role nots match", async () => {
     const { sut, userRepoStub } = makeSut();
-    vi.spyOn(userRepoStub, "getById").mockResolvedValueOnce({ ...getUserMock(), role: "invalid_role" });
+    vi.spyOn(userRepoStub, "getById").mockResolvedValueOnce({ ...getUserMock() });
     const result = await sut.handle(input);
 
     expect(result).toEqual({ statusCode: 403, data: new AccessDeniedError() });
@@ -75,10 +75,23 @@ describe("AuthMiddleware", () => {
   it("should return statusCode 200 and correct data on success", async () => {
     const { sut, userRepoStub } = makeSut();
     const mockedUser = getUserMock();
-    vi.spyOn(userRepoStub, "getById").mockResolvedValueOnce(mockedUser);
+    vi.spyOn(userRepoStub, "getById").mockResolvedValueOnce({
+      ...mockedUser,
+      role: {
+        ...mockedUser.role,
+        name: "admin"
+      },
+    });
 
     const result = await sut.handle(input);
 
-    expect(result).toEqual({ statusCode: 200, data: { userRole: mockedUser.role }});
+    expect(result).toEqual({
+      statusCode: 200,
+      data: {
+        userRole: {
+          ...mockedUser.role,
+          name: "admin"
+        },
+      }});
   });
 });

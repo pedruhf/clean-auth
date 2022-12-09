@@ -5,9 +5,9 @@ import { SignUp } from "@/domain/features";
 import { BadlyFormattedEmail, EmailInUseError, RequiredFieldError } from "@/application/errors";
 import { SignUpController } from "@/application/controllers";
 import { HttpRequest } from "@/application/helpers";
-import { GetUserByEmailRepo } from "@/data/repos";
-import { User } from "@/domain/models";
-import { getUserMock } from "@/tests/domain/mocks";
+import { GetRoleByNameRepo, GetUserByEmailRepo } from "@/data/repos";
+import { Role, User } from "@/domain/models";
+import { getRoleMock, getUserMock } from "@/tests/domain/mocks";
 
 class RemoteSignUpStub implements SignUp {
   async execute(input: SignUp.Input): Promise<void> {}
@@ -19,14 +19,43 @@ export class UsersRepoStub implements GetUserByEmailRepo {
   }
 }
 
+export class RoleRepoStub implements GetRoleByNameRepo {
+  async getByName(name: string): Promise<Role | undefined> {
+    return Promise.resolve({
+      ...getRoleMock(),
+      name: "admin"
+    });
+  }
+}
+
 const makeSut = () => {
   const remoteSignUpStub = new RemoteSignUpStub();
   const usersRepoStub = new UsersRepoStub();
-  const sut = new SignUpController(usersRepoStub, remoteSignUpStub);
-  return { sut, usersRepoStub, remoteSignUpStub };
+  const roleRepoStub = new RoleRepoStub();
+  const sut = new SignUpController(usersRepoStub, roleRepoStub, remoteSignUpStub);
+  return { sut, usersRepoStub, roleRepoStub, remoteSignUpStub };
 };
 
 describe("SignUp Controller", () => {
+  let request: {
+    body: {
+      name: string;
+      email: string;
+      password: string;
+      roleName: string;
+    }
+  };
+
+  beforeAll(() => {
+    request = {
+      body: {
+        name: faker.name.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        roleName: "admin",
+      }
+    }
+  })
   it("should return statusCode 400 with RequiredFieldError if name is not provided", async () => {
     const { sut } = makeSut();
 
@@ -101,13 +130,7 @@ describe("SignUp Controller", () => {
       getUserMock()
     );
 
-    const body = {
-      name: faker.name.fullName(),
-      email: faker.internet.email().toLowerCase().toLowerCase(),
-      password: faker.internet.password(),
-    };
-
-    const result = await sut.handle({ body });
+    const result = await sut.handle(request);
 
     expect(result).toEqual({
       statusCode: 400,
@@ -121,12 +144,7 @@ describe("SignUp Controller", () => {
       new Error("getUserByEmail error")
     );
 
-    const body = {
-      name: faker.name.fullName(),
-      email: faker.internet.email().toLowerCase(),
-      password: faker.internet.password(),
-    };
-    const result = await sut.handle({ body });
+    const result = await sut.handle(request);
 
     expect(result).toEqual({
       statusCode: 500,
@@ -138,26 +156,16 @@ describe("SignUp Controller", () => {
     const { sut, remoteSignUpStub } = makeSut();
     const executeSpy = vi.spyOn(remoteSignUpStub, "execute");
 
-    const body = {
-      name: faker.name.fullName(),
-      email: faker.internet.email().toLowerCase(),
-      password: faker.internet.password(),
-    };
-    await sut.handle({ body });
+    await sut.handle(request);
 
     expect(executeSpy).toHaveBeenCalledTimes(1);
-    expect(executeSpy).toHaveBeenCalledWith(body);
+    expect(executeSpy).toHaveBeenCalledWith(request.body);
   });
 
   it("should return 201 on success", async () => {
     const { sut } = makeSut();
 
-    const body = {
-      name: faker.name.fullName(),
-      email: faker.internet.email().toLowerCase(),
-      password: faker.internet.password(),
-    };
-    const result = await sut.handle({ body });
+    const result = await sut.handle(request);
 
     expect(result).toEqual({
       statusCode: 201,
@@ -170,12 +178,7 @@ describe("SignUp Controller", () => {
       new Error("signUp Error")
     );
 
-    const body = {
-      name: faker.name.fullName(),
-      email: faker.internet.email().toLowerCase(),
-      password: faker.internet.password(),
-    };
-    const result = await sut.handle({ body });
+    const result = await sut.handle(request);
 
     expect(result).toEqual({
       statusCode: 500,

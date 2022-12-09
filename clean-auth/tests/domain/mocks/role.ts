@@ -5,7 +5,7 @@ import { Role } from "@prisma/client";
 
 export const getRoleMock = (): Role => ({
   id: faker.datatype.number(),
-  name: faker.name.fullName(),
+  name: faker.name.jobArea(),
   permissions: faker.helpers.arrayElements(Object.values(Permissions)),
   createdAt: faker.date.recent(),
   updatedAt: faker.date.recent(),

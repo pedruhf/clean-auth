@@ -49,14 +49,24 @@ describe("PgUserRepo", () => {
   });
 
   describe("save", () => {
-    it("should call create with correct input", async () => {
-      const { sut } = makeSut();
+    let input: {
+      name: string;
+      email: string;
+      password: string;
+      roleName: string;
+    };
 
-      const input = {
+    beforeAll(() => {
+      input = {
         name: faker.name.fullName(),
         email: faker.internet.email(),
         password: faker.internet.password(),
+        roleName: faker.name.jobArea(),
       };
+    })
+
+    it("should call create with correct input", async () => {
+      const { sut } = makeSut();
 
       await sut.save(input);
 
@@ -66,6 +76,7 @@ describe("PgUserRepo", () => {
           name: input.name,
           email: input.email.toLowerCase(),
           password: input.password,
+          roleName: input.roleName,
         },
       });
     });
@@ -73,12 +84,6 @@ describe("PgUserRepo", () => {
     it("should throw DbConnectionError if create throws", async () => {
       const { sut } = makeSut();
       createUserSpy.mockRejectedValueOnce(new Error("create error"));
-
-      const input = {
-        name: faker.name.fullName(),
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-      };
 
       const resultPromise = sut.save(input);
 
@@ -97,6 +102,16 @@ describe("PgUserRepo", () => {
       expect(findUniqueUserSpy).toHaveBeenCalledWith({
         where: {
           email: input.toLowerCase(),
+        },
+        select: {
+          createdAt: true,
+          email: true,
+          id: true,
+          name: true,
+          password: true,
+          role: true,
+          roleName: false,
+          updatedAt: true,
         },
       });
     });
@@ -185,6 +200,16 @@ describe("PgUserRepo", () => {
       expect(findUniqueUserSpy).toHaveBeenCalledWith({
         where: {
           id: input,
+        },
+        select: {
+          createdAt: true,
+          email: true,
+          id: true,
+          name: true,
+          password: false,
+          role: true,
+          roleName: false,
+          updatedAt: true,
         },
       });
     });
